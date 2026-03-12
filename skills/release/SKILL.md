@@ -31,6 +31,24 @@ Use a **haiku subagent** to:
    - If it's already in Queueing or later → inform: "TEC-123 is already in Queueing/Working."
 2. Move the issue to **Queueing** status
 
-## Step 3: Confirm
+## Step 3: Cascade Status to Sub-Issues
+
+**Linear does not automatically cascade status changes from parent to child issues.** After moving the parent to Queueing, check for sub-issues (phase tasks created by `/approve`). If any exist, move **all** of them to Queueing as well.
+
+Use a **haiku subagent** to:
+
+1. List sub-issues of the parent (check `children` or query by `parentId`)
+2. Move all sub-issues to **Queueing** in parallel
+
+```
+# For each sub-issue:
+save_issue(id: "<sub-issue-id>", state: "Queueing")
+```
+
+If there are no sub-issues, skip this step silently.
+
+## Step 4: Confirm
 
 **"TEC-123 released to Queueing and available for implementation. Use `/implement TEC-123` to start building."**
+
+If sub-issues were cascaded: **"TEC-123 and N phase sub-issues released to Queueing. Use `/implement TEC-123` to start building."**

@@ -38,6 +38,16 @@ Move the target issue to **Working**:
 save_issue(id: "<issue-id>", state: "Working")
 ```
 
+### For Features with existing phase sub-issues:
+If the target is a Feature and already has phase sub-issues (created by `/approve`), move **only the first sub-issue** to Working. Leave the remaining sub-issues at their current status — they will be moved to Working individually as you begin work on each one.
+
+```
+# Move parent to Working
+save_issue(id: "<parent-id>", state: "Working")
+# Move ONLY the first phase sub-issue to Working
+save_issue(id: "<first-sub-issue-id>", state: "Working")
+```
+
 ### Promote parent issue if needed:
 If the issue is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queueing**, move it to **Working** as well.
 
@@ -78,16 +88,27 @@ Tasks get checklists directly in the **issue description body** (appended below 
 ```
 
 ### For issues labeled **Feature**:
-Features get subtasks for phases, with checklists on each subtask.
+Features have phase sub-issues with checklists on each.
 
-1. Create a subtask for each phase/major deliverable in the plan:
+#### If phase sub-issues already exist (created by `/approve`):
+The sub-issues are already created with full descriptions. Do NOT recreate them. Instead:
+
+1. Read the first sub-issue's description to understand the phase scope.
+2. Compose a checklist of concrete implementation steps and append it to the **sub-issue's description body**.
+3. The first sub-issue should already be in Working (moved in Step 2).
+
+#### If no phase sub-issues exist yet:
+Create a subtask for each phase/major deliverable in the plan:
 ```
 save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queueing")
 ```
+Then move the first subtask to **Working**.
 
-2. For the first subtask you're about to work on, read the relevant code and compose a checklist of concrete implementation steps. Write the checklist into the **subtask's description body**:
+#### For the first sub-issue (either case):
+Read the relevant code and compose a checklist of concrete implementation steps. Write the checklist into the **sub-issue's description body** (append below existing content if `/approve` already populated a description):
 
 ```markdown
+
 ## Implementation Checklist
 - [ ] Step 1 description
 - [ ] Step 2 description
@@ -97,11 +118,9 @@ save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-i
 🤖 Claude · Session {8-char-UUID}
 ```
 
-3. Move the first subtask to **Working**.
-
 Use a **haiku subagent** for creating subtasks and writing descriptions.
 
-Don't create checklists for future subtasks yet — create them when you pick each one up. This keeps them grounded in code you've actually read.
+Don't create checklists for future sub-issues yet — create them when you pick each one up. This keeps them grounded in code you've actually read.
 
 ### Create the TodoWrite list:
 Build a TodoWrite list from the checklist you just created. This is your session-scoped execution tracker. Include:
@@ -120,9 +139,10 @@ Begin coding, following the TodoWrite list. As you work:
 - **Comment ordering**: When editing a checklist comment (not description), ensure you're editing the correct one. An issue may have comments from multiple sessions or remediation cycles. Linear's `list_comments` returns newest-first — read chronologically (oldest→newest) and target the checklist from the **current** session or cycle. Never edit comments from a previous cycle.
 - If you discover the task list needs to change: **pause coding**, update both the TodoWrite list and the Linear checklist, then continue
 
-### Subtask status management:
-- When a subtask's checklist is fully complete, move that subtask to **Reviewing** immediately — don't wait for all subtasks to be done
-- The parent issue stays in Working until ALL subtasks reach Reviewing or Running
+### Sub-issue status management:
+- **Starting a new sub-issue**: Move it to **Working** before beginning work on it. Only one sub-issue should be in Working at a time (the one you're actively coding).
+- **Completing a sub-issue**: When its checklist is fully complete, move it to **Reviewing** immediately — don't wait for all sub-issues to be done.
+- **The parent stays in Working** until ALL sub-issues reach Reviewing or Running.
 
 ### Scope discipline:
 The plan is scope-locked. You may perform localized code hygiene (formatting, fixing an adjacent typo) but nothing beyond that. If you feel tempted to introduce refactoring that isn't in the plan:
