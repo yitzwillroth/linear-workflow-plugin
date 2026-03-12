@@ -7,6 +7,17 @@ description: Start implementation of a planned issue. Creates subtasks (features
 
 Begin implementation of a planned and approved issue. This skill reads the plan, creates the execution scaffolding (subtasks/checklists + TodoWrite), and starts coding.
 
+## Attribution
+
+Every Linear comment and issue body update made during implementation must include an attribution signature:
+
+```
+---
+🤖 Claude · Session {first-8-chars-of-session-UUID}
+```
+
+Derive the session UUID from the most recently modified JSONL transcript file in `~/.claude/projects/`. Include this signature on all comments and description edits posted via haiku subagents.
+
 ## Step 1: Identify the Target Issue
 
 ### With an argument (`/implement TEC-123`):
@@ -34,7 +45,9 @@ Use a **haiku subagent** for these status updates.
 
 ## Step 3: Read the Plan
 
-Read the plan document attached to the issue. Understand:
+Read **ALL** documents attached to the issue — the implementation plan AND any referenced exploratory or background documents. Don't rely solely on the issue description; the real detail is in the plan documents.
+
+Understand:
 - The objective and approach
 - The implementation steps (and phases, if any)
 - The test strategy
@@ -47,17 +60,21 @@ If there's a referenced exploratory document (linked from the issue), read that 
 Re-read the plan's Implementation Steps. Determine the issue type from its labels.
 
 ### For issues labeled **Task**:
-Tasks get checklists directly on the issue. No subtasks.
+Tasks get checklists directly in the **issue description body** (appended below the existing summary). No subtasks.
 
 1. Compose a checklist from the implementation steps. Each item should be concrete and independently verifiable.
-2. Use a **haiku subagent** to post the checklist as a comment on the issue in this format:
+2. Use a **haiku subagent** to update the issue description, appending the checklist below any existing content:
 
 ```markdown
+
 ## Implementation Checklist
 - [ ] Step 1 description
 - [ ] Step 2 description
 - [ ] Step 3 description
 ...
+
+---
+🤖 Claude · Session {8-char-UUID}
 ```
 
 ### For issues labeled **Feature**:
@@ -65,14 +82,24 @@ Features get subtasks for phases, with checklists on each subtask.
 
 1. Create a subtask for each phase/major deliverable in the plan:
 ```
-save_issue(title: "<phase title>", team: "YOUR_TEAM", parentId: "<parent-issue-id>", state: "Queueing")
+save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queueing")
 ```
 
-2. For the first subtask you're about to work on, read the relevant code and compose a checklist of concrete implementation steps. Post it as a comment on that subtask.
+2. For the first subtask you're about to work on, read the relevant code and compose a checklist of concrete implementation steps. Write the checklist into the **subtask's description body**:
+
+```markdown
+## Implementation Checklist
+- [ ] Step 1 description
+- [ ] Step 2 description
+- [ ] Step 3 description
+
+---
+🤖 Claude · Session {8-char-UUID}
+```
 
 3. Move the first subtask to **Working**.
 
-Use a **haiku subagent** for creating subtasks and posting checklists.
+Use a **haiku subagent** for creating subtasks and writing descriptions.
 
 Don't create checklists for future subtasks yet — create them when you pick each one up. This keeps them grounded in code you've actually read.
 
@@ -89,8 +116,12 @@ Begin coding, following the TodoWrite list. As you work:
 
 ### Progress tracking:
 - Mark TodoWrite tasks complete immediately as you finish each one (don't batch)
-- Periodically dispatch a **haiku subagent** to check off completed checklist items in Linear (every 2-3 completed items, not after every single one)
+- **After every single completed item**, dispatch a **haiku subagent** to check off that item in the Linear checklist (edit the description or comment in-place). Do NOT batch these — every completion triggers an immediate Linear update.
 - If you discover the task list needs to change: **pause coding**, update both the TodoWrite list and the Linear checklist, then continue
+
+### Subtask status management:
+- When a subtask's checklist is fully complete, move that subtask to **Reviewing** immediately — don't wait for all subtasks to be done
+- The parent issue stays in Working until ALL subtasks reach Reviewing or Running
 
 ### Scope discipline:
 The plan is scope-locked. You may perform localized code hygiene (formatting, fixing an adjacent typo) but nothing beyond that. If you feel tempted to introduce refactoring that isn't in the plan:
@@ -106,8 +137,8 @@ If you encounter ambiguity or a decision the plan doesn't cover:
 
 ### When stuck:
 If you hit a blocker:
-1. Try alternative approaches that align with the plan
-2. If you find a path forward — take it, but note what happened
+1. Use the `counselors` CLI to explore options that align with the plan
+2. If counselors yields a path forward — take it, but note what happened
 3. If no path aligns with the plan — stop coding, describe the difficulty, and wait for guidance
 
 ### When deviating:
@@ -117,7 +148,11 @@ If you discover the task list must change to successfully implement the plan:
 3. You may then continue without waiting for confirmation — the updated list is your authorization
 
 ### Tool selection:
-Before each task, briefly consider which tools are highest leverage for the current codebase. Use whatever search, navigation, and editing tools are available to you — prioritize structural/semantic tools over raw text search when possible.
+Before each task, briefly consider which tools are highest leverage:
+- Serena LSP for structural navigation and symbol-level edits
+- ColGrep for behavioral/intent queries
+- ast-grep for structural pattern matching
+- Grep for exact text matches
 
 ## Step 6: Completion
 
@@ -133,7 +168,7 @@ Remediate any issues before declaring completion.
 
 ### 6b. Finalize Linear artifacts:
 Use a **haiku subagent** to:
-- Check off any remaining checklist items
+- Check off any remaining checklist items (edit in-place)
 - Move the issue (or current subtask) to **Reviewing**
 - If all subtasks of a feature are complete, move the parent to **Reviewing**
 
@@ -142,8 +177,12 @@ Compose a summary and present it in the conversation AND post it as a comment on
 
 - **What was done** — concrete list of changes, files touched
 - **Assumptions made** — decisions you made without asking
-- **Challenges and resolutions** — anything that didn't go smoothly
+- **Challenges and resolutions** — anything that didn't go smoothly, including any use of `counselors` CLI
 - **Insights** — anything learned that would be valuable for future work on this codebase, especially guidance that would help other agents working on the project
+
+Do NOT repost the full checklist in the completion summary — it's already tracked in the description/comment.
+
+Include the attribution signature on the completion comment.
 
 ### 6d. Confirm to user:
 **"Implementation is complete and moved to Reviewing. Summary posted above and on the Linear issue. Please review when ready — use `/complete TEC-xxx` to mark it Running, or `/remediate TEC-xxx` if there are issues to address."**

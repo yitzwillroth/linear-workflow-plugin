@@ -7,6 +7,17 @@ description: Approve a plan and finalize Linear artifacts. Unlocks editing tools
 
 The user has reviewed and approved the plan. Finalize the artifacts and unlock editing tools — but do NOT begin implementation. The user will invoke `/implement` when ready to start building.
 
+## Attribution
+
+Every Linear comment and issue update must include an attribution signature:
+
+```
+---
+🤖 Claude · Session {first-8-chars-of-session-UUID}
+```
+
+Derive the session UUID from the most recently modified JSONL transcript file in `~/.claude/projects/`.
+
 ## Step 1: Remove Session from Planning File
 
 Run this command to deactivate planning mode:
@@ -39,7 +50,7 @@ If the exploration has matured into an actionable feature:
 
 1. Create a parent issue labeled **Feature** for the feature:
 ```
-save_issue(title: "<feature title>", team: "YOUR_TEAM", project: "<project>", labels: ["Feature"], state: "Scheduling")
+save_issue(title: "<feature title>", team: "Technologentsia", project: "<project>", labels: ["Feature"], state: "Scheduling")
 ```
 
 2. Create a new implementation plan document attached to that issue (distinct from the exploratory project document):
@@ -83,5 +94,5 @@ Close with: **"Plan is approved and artifacts are finalized. Use `/implement` (o
 
 1. **Do NOT begin implementation.** This skill finalizes artifacts only. `/implement` starts the work.
 2. **Do NOT create subtasks or checklists.** Those are created at implementation time by `/implement`.
-3. **Use haiku subagents** for Linear write operations (status updates, label changes, link additions).
+3. **Use haiku subagents** for Linear write operations (status updates, label changes, link additions). Include the attribution signature on any comments posted.
 4. **Use the correct status names**: Scheduling (planned/approved), Queueing (released for work), Working (in progress), Reviewing (awaiting review), Running (complete).

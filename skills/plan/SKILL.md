@@ -7,6 +7,17 @@ description: Enter custom planning mode. Locks editing tools, guides thorough co
 
 You are entering planning mode. Your job is to **explore thoroughly and think deeply** before proposing any implementation. You are NOT allowed to write code until the user explicitly approves your plan.
 
+## Attribution
+
+Every Linear document and comment created during planning must include an attribution signature:
+
+```
+---
+🤖 Claude · Session {first-8-chars-of-session-UUID}
+```
+
+Derive the session UUID from the most recently modified JSONL transcript file in `~/.claude/projects/`. Include this at the bottom of plan documents and any comments posted.
+
 ## Step 1: Lock Editing Tools
 
 Run this command immediately to activate the planning gate:
@@ -101,14 +112,15 @@ This is the most important step. **Do not rush to write a plan.** Your goal is t
 ### Exploration checklist:
 
 1. **Understand the request** — What exactly needs to happen? What are the acceptance criteria?
-2. **Find existing patterns** — How does the codebase handle similar things today? Use whatever structural navigation and search tools are available to you.
+2. **Find existing patterns** — How does the codebase handle similar things today? Use Serena LSP (`find_symbol`, `get_symbols_overview`, `find_referencing_symbols`) for structural navigation. Use ColGrep for behavioral/intent queries when you don't know what to search for.
 3. **Identify all touchpoints** — Which files, classes, methods, configs, tests, and migrations will be affected?
-4. **Check for constraints** — Are there architectural rules? Database limitations? Convention requirements?
+4. **Check for constraints** — Are there architectural rules (check `ArchTest.php`)? Database limitations (SQLite in tests)? Convention requirements?
 5. **Look for prior art** — Has something similar been attempted before? Are there related TODOs, comments, or partial implementations?
 6. **Consider the test strategy** — How will this be tested? What fixtures or factories are needed?
 
 ### Tools you SHOULD use heavily:
-- Structural/semantic code navigation tools (if available)
+- `find_symbol` / `get_symbols_overview` / `find_referencing_symbols` (Serena LSP)
+- `colgrep` via Bash (semantic code search)
 - `Read` (read files thoroughly)
 - `Grep` / `Glob` (exact matches, file patterns)
 - `Agent` with explore subagent (for deep dives)
@@ -141,7 +153,7 @@ Check if the issue already has a plan document. If it does, update it with `upda
 
 **For implementation plans (create issue + plan):**
 ```
-save_issue(title: "<title from conversation>", team: "YOUR_TEAM", project: "<project>", labels: ["Task"])
+save_issue(title: "<title from conversation>", team: "Technologentsia", project: "<project>", labels: ["Task"])
 create_document(issue: "<new issue identifier>", title: "Plan: <brief description>", content: <plan>)
 ```
 
@@ -183,6 +195,9 @@ How this will be tested. Which test files, what scenarios.
 
 ## Open Questions
 Anything unresolved that needs input before starting.
+
+---
+🤖 Claude · Session {8-char-UUID}
 ```
 
 After creating or updating the document, share the URL with the user and say:

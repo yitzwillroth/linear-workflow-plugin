@@ -7,6 +7,17 @@ description: "Dual-mode: (1) /remediate TEC-123 <feedback> posts organized feedb
 
 Dual-mode skill for managing remediation feedback on Linear issues.
 
+## Attribution
+
+Every Linear comment and issue update made during remediation must include an attribution signature:
+
+```
+---
+🤖 Claude · Session {first-8-chars-of-session-UUID}
+```
+
+Derive the session UUID from the most recently modified JSONL transcript file in `~/.claude/projects/`. Include this signature on all comments posted via haiku subagents.
+
 ## Step 1: Parse Arguments & Detect Mode
 
 The first token should be an issue identifier (`TEC-123`). If not provided, infer from conversation context. If ambiguous, ask.
@@ -37,9 +48,12 @@ Format:
 
 ### Additional Context
 - [any other details from the feedback that don't fit above]
+
+---
+🤖 Claude · Session {8-char-UUID}
 ```
 
-Omit sections that don't apply.
+Omit sections that don't apply (except the attribution signature — always include it).
 
 ### Step 3P: Post and Route
 
@@ -83,6 +97,9 @@ Use a **haiku subagent** to:
 - [ ] Action item 1
 - [ ] Action item 2
 - [ ] Action item 3
+
+---
+🤖 Claude · Session {8-char-UUID}
 ```
 
 ### Step 5F: Build TodoWrite
@@ -93,7 +110,7 @@ Mirror the checklist items into a TodoWrite list for session tracking. Add a fin
 
 Begin fixing, following these discipline patterns (same as /implement):
 
-- **Progress tracking**: Mark TodoWrite tasks complete as you finish each. Periodically dispatch a haiku subagent to check off checklist items in Linear.
+- **Progress tracking**: Mark TodoWrite tasks complete as you finish each. **After every single completed item**, dispatch a haiku subagent to check off that item in the Linear checklist comment — **edit the comment in-place**, don't post a new comment showing completion.
 - **Scope lock**: Only fix what the remediation feedback describes. If you discover additional issues, note them but don't fix them unless they're blocking the remediation.
 - **Tool selection**: Serena LSP for structural nav, ColGrep for behavioral queries, ast-grep for patterns, Grep for text.
 
@@ -102,9 +119,10 @@ Begin fixing, following these discipline patterns (same as /implement):
 When the fix is complete:
 
 1. **Verify** — confirm the reported issue is resolved (run tests, check the specific failure scenario)
-2. **Finalize Linear** — via haiku subagent: check off remaining checklist items, move issue to **Reviewing**, move parent to **Reviewing** if all subtasks are done
-3. **Post summary** — as a comment on the issue and in the conversation:
+2. **Finalize Linear** — via haiku subagent: edit the checklist comment in-place to check off remaining items, move issue to **Reviewing**, move parent to **Reviewing** if all subtasks are done
+3. **Post summary** — as a comment on the issue (with attribution) and in the conversation:
    - What was fixed
    - Root cause
    - Files changed
+   Do NOT repost the full checklist — it's already tracked in the comment.
 4. **Confirm**: **"Remediation complete for TEC-123, moved to Reviewing. Use `/complete TEC-123` to mark as Running, or `/remediate TEC-123` again if issues remain."**

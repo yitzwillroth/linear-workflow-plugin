@@ -7,6 +7,17 @@ description: End-of-session review. Enriches Linear artifacts with insights, upd
 
 The session is winding down. Review what happened and make sure everything valuable is captured in the right places before the conversation ends.
 
+## Attribution
+
+Every Linear comment posted during handoff must include an attribution signature:
+
+```
+---
+🤖 Claude · Session {first-8-chars-of-session-UUID}
+```
+
+Derive the session UUID from the most recently modified JSONL transcript file in `~/.claude/projects/`.
+
 ## Step 1: Review the Session
 
 Scan the conversation for:
@@ -21,8 +32,9 @@ Scan the conversation for:
 Use a **haiku subagent** for all Linear writes.
 
 ### If implementation was in flight:
-- Update checklist progress (check off completed items)
+- Update checklist progress by **editing the checklist comment or description in-place** (check off completed items) — do NOT post a new comment showing completion
 - If a subtask is partially complete, add a comment noting where work stopped and what remains
+- Move completed subtasks to **Reviewing** if their checklists are fully done
 - Do NOT move issues to Reviewing unless the work is actually complete
 
 ### For all sessions:
@@ -42,10 +54,13 @@ Use a **haiku subagent** for all Linear writes.
 
 ### Next Steps
 - [what the next session should pick up]
+
+---
+🤖 Claude · Session {8-char-UUID}
 ```
 
 ### Enrich related issues:
-If insights or decisions apply to other issues (parent, sibling subtasks, related issues), post brief comments on those too.
+If insights or decisions apply to other issues (parent, sibling subtasks, related issues), post brief comments on those too (with attribution).
 
 ## Step 3: Save Durable Learnings to Memory
 

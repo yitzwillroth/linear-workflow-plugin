@@ -7,6 +7,17 @@ description: "Move a planned issue from Scheduling to Queueing, releasing it for
 
 Move an approved issue from Scheduling to Queueing, signaling it's released for implementation.
 
+## Attribution
+
+Every Linear status update must include awareness of the attribution convention. If a comment is posted as part of this operation, include:
+
+```
+---
+🤖 Claude · Session {first-8-chars-of-session-UUID}
+```
+
+Derive the session UUID from the most recently modified JSONL transcript file in `~/.claude/projects/`.
+
 ## Step 1: Parse Arguments
 
 The first token should be an issue identifier (`TEC-123`). If not provided, infer from conversation context. If ambiguous, ask.

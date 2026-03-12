@@ -7,6 +7,17 @@ description: "Mark a Linear issue as Running after user review. Usage: /complete
 
 The user has reviewed the implementation and is satisfied. Mark the issue as Running.
 
+## Attribution
+
+Every Linear comment and status update must include an attribution signature:
+
+```
+---
+🤖 Claude · Session {first-8-chars-of-session-UUID}
+```
+
+Derive the session UUID from the most recently modified JSONL transcript file in `~/.claude/projects/`.
+
 ## Step 1: Parse Arguments
 
 The first token should be an issue identifier (`TEC-123`). If not provided, infer from conversation context. If ambiguous, ask.
