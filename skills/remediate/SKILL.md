@@ -1,6 +1,6 @@
 ---
 name: remediate
-description: "Dual-mode: (1) /remediate TEC-123 <feedback> posts organized feedback and moves to Queueing, or (2) /remediate TEC-123 (no feedback) reads existing remediation comment, moves to Working, and begins fixing."
+description: "Dual-mode: (1) /remediate TEC-123 <feedback> posts organized feedback and moves to Queuing, or (2) /remediate TEC-123 (no feedback) reads existing remediation comment, moves to Working, and begins fixing."
 ---
 
 # Remediate
@@ -24,7 +24,7 @@ The first token should be an issue identifier (`TEC-123`). If not provided, infe
 
 Everything after the identifier is the user's feedback. **The presence or absence of feedback determines the mode:**
 
-- **Feedback provided** → **Post mode** (post feedback, route to Queueing)
+- **Feedback provided** → **Post mode** (post feedback, route to Queuing)
 - **No feedback** → **Fix mode** (read existing feedback, begin fixing)
 
 ---
@@ -61,13 +61,13 @@ Use a **haiku subagent** to do all three in one dispatch:
 
 1. Post the organized comment on the issue
 2. Add the **Remediation** label to the issue
-3. Move the issue to **Queueing** status
+3. Move the issue to **Queuing** status
 
 ### Step 4P: Confirm
 
 Show the user the organized comment you posted, and confirm:
 
-**"Feedback posted to TEC-123 and moved to Queueing with Remediation label. This will be prioritized in the next implementation session."**
+**"Feedback posted to TEC-123 and moved to Queuing with Remediation label. This will be prioritized in the next implementation session."**
 
 ---
 
@@ -92,7 +92,7 @@ Present the remediation feedback concisely so the user can confirm scope before 
 Use a **haiku subagent** to:
 
 1. Move the issue to **Working** status
-2. If the issue has a parent, move the parent to **Working** if it's in Planning or Queueing
+2. If the issue has a parent, move the parent to **Working** if it's in Planning or Queuing
 3. Remove the **Remediation** label
 4. Post a **new** Remediation Checklist comment derived from the feedback (never reuse a previous cycle's checklist comment):
 

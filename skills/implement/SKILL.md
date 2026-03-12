@@ -27,7 +27,7 @@ Fetch the issue with `get_issue(id: "TEC-123")`.
 Infer the target from conversation context — typically the issue just created or discussed via `/plan` and `/approve`. If the target is ambiguous, ask: "Which issue should I implement? I see we've been discussing [X] and [Y]."
 
 ### Validate readiness:
-- The issue should be in **Scheduling** or **Queueing** status. If it's in Planning, ask: "This issue is still in Planning. Should I proceed, or did you want to plan it first with `/plan`?"
+- The issue should be in **Scheduling** or **Queuing** status. If it's in Planning, ask: "This issue is still in Planning. Should I proceed, or did you want to plan it first with `/plan`?"
 - The issue should have a plan document attached. If it doesn't, ask: "I don't see a plan document on this issue. Should I proceed without one, or create a plan first?"
 
 ## Step 2: Move to Working
@@ -49,7 +49,7 @@ save_issue(id: "<first-sub-issue-id>", state: "Working")
 ```
 
 ### Promote parent issue if needed:
-If the issue is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queueing**, move it to **Working** as well.
+If the issue is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queuing**, move it to **Working** as well.
 
 Use a **haiku subagent** for these status updates.
 
@@ -100,7 +100,7 @@ The sub-issues are already created with full descriptions. Do NOT recreate them.
 #### If no phase sub-issues exist yet:
 Create a subtask for each phase/major deliverable in the plan:
 ```
-save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queueing")
+save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queuing")
 ```
 Then move the first subtask to **Working**.
 

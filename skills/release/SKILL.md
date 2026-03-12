@@ -1,11 +1,11 @@
 ---
 name: release
-description: "Move a planned issue from Scheduling to Queueing, releasing it for implementation. Usage: /release TEC-123. Dispatches via haiku subagent."
+description: "Move a planned issue from Scheduling to Queuing, releasing it for implementation. Usage: /release TEC-123. Dispatches via haiku subagent."
 ---
 
 # Release
 
-Move an approved issue from Scheduling to Queueing, signaling it's released for implementation.
+Move an approved issue from Scheduling to Queuing, signaling it's released for implementation.
 
 ## Attribution
 
@@ -28,27 +28,27 @@ Use a **haiku subagent** to:
 
 1. Fetch the issue and verify it's in **Scheduling** status
    - If it's in Planning → warn: "TEC-123 is still in Planning. Did you want to plan it first with `/plan TEC-123`?"
-   - If it's already in Queueing or later → inform: "TEC-123 is already in Queueing/Working."
-2. Move the issue to **Queueing** status
+   - If it's already in Queuing or later → inform: "TEC-123 is already in Queuing/Working."
+2. Move the issue to **Queuing** status
 
 ## Step 3: Cascade Status to Sub-Issues
 
-**Linear does not automatically cascade status changes from parent to child issues.** After moving the parent to Queueing, check for sub-issues (phase tasks created by `/approve`). If any exist, move **all** of them to Queueing as well.
+**Linear does not automatically cascade status changes from parent to child issues.** After moving the parent to Queuing, check for sub-issues (phase tasks created by `/approve`). If any exist, move **all** of them to Queuing as well.
 
 Use a **haiku subagent** to:
 
 1. List sub-issues of the parent (check `children` or query by `parentId`)
-2. Move all sub-issues to **Queueing** in parallel
+2. Move all sub-issues to **Queuing** in parallel
 
 ```
 # For each sub-issue:
-save_issue(id: "<sub-issue-id>", state: "Queueing")
+save_issue(id: "<sub-issue-id>", state: "Queuing")
 ```
 
 If there are no sub-issues, skip this step silently.
 
 ## Step 4: Confirm
 
-**"TEC-123 released to Queueing and available for implementation. Use `/implement TEC-123` to start building."**
+**"TEC-123 released to Queuing and available for implementation. Use `/implement TEC-123` to start building."**
 
-If sub-issues were cascaded: **"TEC-123 and N phase sub-issues released to Queueing. Use `/implement TEC-123` to start building."**
+If sub-issues were cascaded: **"TEC-123 and N phase sub-issues released to Queuing. Use `/implement TEC-123` to start building."**

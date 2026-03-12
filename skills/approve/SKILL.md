@@ -122,13 +122,13 @@ Use parallel calls for efficiency.
 
 ## Step 6: Promote Parent Issue if Needed
 
-If the issue being approved is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queueing**, move it to **Working**:
+If the issue being approved is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queuing**, move it to **Working**:
 
 ```
 get_issue(id: "<issue-id>")  → check for parentId
 # If parentId exists:
 get_issue(id: "<parent-id>")  → check state
-# If state is Planning or Queueing:
+# If state is Planning or Queuing:
 save_issue(id: "<parent-id>", state: "Working")
 ```
 
@@ -149,4 +149,4 @@ Close with: **"Plan is approved and artifacts are finalized. Use `/implement` (o
 2. **Create phase sub-issues for phased plans.** If the plan has multiple phases, create a sub-issue per phase with full content in the description body (not as comments). Move them to match the parent's status.
 3. **Always cascade status changes to sub-issues.** Linear does not propagate status from parent to children. When moving the parent, move all children too.
 4. **Use haiku subagents** for Linear write operations (status updates, label changes, link additions). Include the attribution signature on any comments posted.
-5. **Use the correct status names**: Scheduling (planned/approved), Queueing (released for work), Working (in progress), Reviewing (awaiting review), Running (complete).
+5. **Use the correct status names**: Scheduling (planned/approved), Queuing (released for work), Working (in progress), Reviewing (awaiting review), Running (complete).
