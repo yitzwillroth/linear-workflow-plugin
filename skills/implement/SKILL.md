@@ -65,7 +65,7 @@ Features get subtasks for phases, with checklists on each subtask.
 
 1. Create a subtask for each phase/major deliverable in the plan:
 ```
-save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queueing")
+save_issue(title: "<phase title>", team: "YOUR_TEAM", parentId: "<parent-issue-id>", state: "Queueing")
 ```
 
 2. For the first subtask you're about to work on, read the relevant code and compose a checklist of concrete implementation steps. Post it as a comment on that subtask.
@@ -106,8 +106,8 @@ If you encounter ambiguity or a decision the plan doesn't cover:
 
 ### When stuck:
 If you hit a blocker:
-1. Use the `counselors` CLI to explore options that align with the plan
-2. If counselors yields a path forward — take it, but note what happened
+1. Try alternative approaches that align with the plan
+2. If you find a path forward — take it, but note what happened
 3. If no path aligns with the plan — stop coding, describe the difficulty, and wait for guidance
 
 ### When deviating:
@@ -117,11 +117,7 @@ If you discover the task list must change to successfully implement the plan:
 3. You may then continue without waiting for confirmation — the updated list is your authorization
 
 ### Tool selection:
-Before each task, briefly consider which tools are highest leverage:
-- Serena LSP for structural navigation and symbol-level edits
-- ColGrep for behavioral/intent queries
-- ast-grep for structural pattern matching
-- Grep for exact text matches
+Before each task, briefly consider which tools are highest leverage for the current codebase. Use whatever search, navigation, and editing tools are available to you — prioritize structural/semantic tools over raw text search when possible.
 
 ## Step 6: Completion
 
@@ -146,7 +142,7 @@ Compose a summary and present it in the conversation AND post it as a comment on
 
 - **What was done** — concrete list of changes, files touched
 - **Assumptions made** — decisions you made without asking
-- **Challenges and resolutions** — anything that didn't go smoothly, including any use of `counselors` CLI
+- **Challenges and resolutions** — anything that didn't go smoothly
 - **Insights** — anything learned that would be valuable for future work on this codebase, especially guidance that would help other agents working on the project
 
 ### 6d. Confirm to user:

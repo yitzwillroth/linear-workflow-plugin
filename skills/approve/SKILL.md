@@ -39,7 +39,7 @@ If the exploration has matured into an actionable feature:
 
 1. Create a parent issue labeled **Feature** for the feature:
 ```
-save_issue(title: "<feature title>", team: "Technologentsia", project: "<project>", labels: ["Feature"], state: "Scheduling")
+save_issue(title: "<feature title>", team: "YOUR_TEAM", project: "<project>", labels: ["Feature"], state: "Scheduling")
 ```
 
 2. Create a new implementation plan document attached to that issue (distinct from the exploratory project document):

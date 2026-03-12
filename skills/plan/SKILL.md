@@ -101,15 +101,14 @@ This is the most important step. **Do not rush to write a plan.** Your goal is t
 ### Exploration checklist:
 
 1. **Understand the request** — What exactly needs to happen? What are the acceptance criteria?
-2. **Find existing patterns** — How does the codebase handle similar things today? Use Serena LSP (`find_symbol`, `get_symbols_overview`, `find_referencing_symbols`) for structural navigation. Use ColGrep for behavioral/intent queries when you don't know what to search for.
+2. **Find existing patterns** — How does the codebase handle similar things today? Use whatever structural navigation and search tools are available to you.
 3. **Identify all touchpoints** — Which files, classes, methods, configs, tests, and migrations will be affected?
-4. **Check for constraints** — Are there architectural rules (check `ArchTest.php`)? Database limitations (SQLite in tests)? Convention requirements?
+4. **Check for constraints** — Are there architectural rules? Database limitations? Convention requirements?
 5. **Look for prior art** — Has something similar been attempted before? Are there related TODOs, comments, or partial implementations?
 6. **Consider the test strategy** — How will this be tested? What fixtures or factories are needed?
 
 ### Tools you SHOULD use heavily:
-- `find_symbol` / `get_symbols_overview` / `find_referencing_symbols` (Serena LSP)
-- `colgrep` via Bash (semantic code search)
+- Structural/semantic code navigation tools (if available)
 - `Read` (read files thoroughly)
 - `Grep` / `Glob` (exact matches, file patterns)
 - `Agent` with explore subagent (for deep dives)
@@ -142,7 +141,7 @@ Check if the issue already has a plan document. If it does, update it with `upda
 
 **For implementation plans (create issue + plan):**
 ```
-save_issue(title: "<title from conversation>", team: "Technologentsia", project: "<project>", labels: ["Task"])
+save_issue(title: "<title from conversation>", team: "YOUR_TEAM", project: "<project>", labels: ["Task"])
 create_document(issue: "<new issue identifier>", title: "Plan: <brief description>", content: <plan>)
 ```
 

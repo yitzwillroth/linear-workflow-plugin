@@ -35,40 +35,21 @@ Planning → Scheduling → Queueing → Working → Reviewing → Running
 
 ## Installation
 
-### 1. Create skill directories
+### As a Claude Code plugin
 
-```bash
-mkdir -p ~/.claude/skills/{plan,approve,implement,handoff,remediate,complete,release}
+If your team management tool supports Claude Code plugins, point it at this repo's URL:
+
+```
+https://github.com/yitzwillroth/linear-workflow-plugin
 ```
 
-### 2. Copy skill files
+### Manual installation
 
-Place each `*-SKILL.md` file as `SKILL.md` in its corresponding directory:
-
-```bash
-# Example for plan:
-cp plan-SKILL.md ~/.claude/skills/plan/SKILL.md
-cp approve-SKILL.md ~/.claude/skills/approve/SKILL.md
-cp implement-SKILL.md ~/.claude/skills/implement/SKILL.md
-cp handoff-SKILL.md ~/.claude/skills/handoff/SKILL.md
-cp remediate-SKILL.md ~/.claude/skills/remediate/SKILL.md
-cp complete-SKILL.md ~/.claude/skills/complete/SKILL.md
-cp release-SKILL.md ~/.claude/skills/release/SKILL.md
-```
-
-### 3. Install the planning mode hooks
-
-```bash
-mkdir -p ~/.claude/hooks
-cp planning-mode-toggle.sh ~/.claude/hooks/
-cp planning-mode-gate.sh ~/.claude/hooks/
-chmod +x ~/.claude/hooks/planning-mode-toggle.sh
-chmod +x ~/.claude/hooks/planning-mode-gate.sh
-```
-
-### 4. Register the gate hook
-
-Add to your `.claude/settings.json`:
+1. Clone this repo
+2. Copy each `skills/<name>/SKILL.md` into `~/.claude/skills/<name>/SKILL.md`
+3. Copy `hooks/planning-mode-gate.sh` and `hooks/planning-mode-toggle.sh` into `~/.claude/hooks/`
+4. Make the hooks executable: `chmod +x ~/.claude/hooks/planning-mode-*.sh`
+5. Register the gate hook in your `~/.claude/settings.json`:
 
 ```json
 {
@@ -88,11 +69,47 @@ Add to your `.claude/settings.json`:
 }
 ```
 
-### 5. Linear setup
+## First-Time Setup
 
-- Create **Feature**, **Task**, and **Remediation** labels
-- Create custom statuses: **Planning** (backlog), **Scheduling** (unstarted), **Queueing** (unstarted), **Working** (started), **Reviewing** (started), **Running** (completed), **Canceled** (canceled)
-- The workflow assumes a team named "Technologentsia" — update skill files to match your team name
+### 1. Set your Linear team name
+
+The skills use `YOUR_TEAM` as a placeholder for Linear API calls. Find and replace it with your actual Linear team name:
+
+```bash
+# From the plugin directory (or wherever your SKILL.md files live):
+sed -i '' 's/YOUR_TEAM/My Team Name/g' skills/*/SKILL.md
+```
+
+Or if installed manually under `~/.claude/skills/`:
+
+```bash
+sed -i '' 's/YOUR_TEAM/My Team Name/g' ~/.claude/skills/{plan,approve,implement}/SKILL.md
+```
+
+### 2. Create Linear labels
+
+Create these labels in your Linear workspace:
+- **Feature**
+- **Task**
+- **Remediation**
+
+### 3. Create custom statuses
+
+Create these custom statuses on your Linear team:
+
+| Status | Type |
+|---|---|
+| Planning | Backlog |
+| Scheduling | Unstarted |
+| Queueing | Unstarted |
+| Working | Started |
+| Reviewing | Started |
+| Running | Completed |
+| Canceled | Canceled |
+
+### 4. Connect the Linear MCP server
+
+Install the [Linear MCP server](https://github.com/linear/linear-mcp) so Claude Code can read and write Linear issues.
 
 ## Key Design Decisions
 
