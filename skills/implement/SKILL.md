@@ -1,0 +1,153 @@
+---
+name: implement
+description: Start implementation of a planned issue. Creates subtasks (features) or checklists (tasks), builds a TodoWrite list, and begins coding. Invoke with /implement TEC-123 or just /implement if the target is clear from context.
+---
+
+# Implement
+
+Begin implementation of a planned and approved issue. This skill reads the plan, creates the execution scaffolding (subtasks/checklists + TodoWrite), and starts coding.
+
+## Step 1: Identify the Target Issue
+
+### With an argument (`/implement TEC-123`):
+Fetch the issue with `get_issue(id: "TEC-123")`.
+
+### Without an argument (`/implement`):
+Infer the target from conversation context — typically the issue just created or discussed via `/plan` and `/approve`. If the target is ambiguous, ask: "Which issue should I implement? I see we've been discussing [X] and [Y]."
+
+### Validate readiness:
+- The issue should be in **Scheduling** or **Queueing** status. If it's in Planning, ask: "This issue is still in Planning. Should I proceed, or did you want to plan it first with `/plan`?"
+- The issue should have a plan document attached. If it doesn't, ask: "I don't see a plan document on this issue. Should I proceed without one, or create a plan first?"
+
+## Step 2: Move to Working
+
+Move the target issue to **Working**:
+
+```
+save_issue(id: "<issue-id>", state: "Working")
+```
+
+### Promote parent issue if needed:
+If the issue is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queueing**, move it to **Working** as well.
+
+Use a **haiku subagent** for these status updates.
+
+## Step 3: Read the Plan
+
+Read the plan document attached to the issue. Understand:
+- The objective and approach
+- The implementation steps (and phases, if any)
+- The test strategy
+- Any open questions (raise these with the user before proceeding)
+
+If there's a referenced exploratory document (linked from the issue), read that too for broader context.
+
+## Step 4: Build the Execution Scaffolding
+
+Re-read the plan's Implementation Steps. Determine the issue type from its labels.
+
+### For issues labeled **Task**:
+Tasks get checklists directly on the issue. No subtasks.
+
+1. Compose a checklist from the implementation steps. Each item should be concrete and independently verifiable.
+2. Use a **haiku subagent** to post the checklist as a comment on the issue in this format:
+
+```markdown
+## Implementation Checklist
+- [ ] Step 1 description
+- [ ] Step 2 description
+- [ ] Step 3 description
+...
+```
+
+### For issues labeled **Feature**:
+Features get subtasks for phases, with checklists on each subtask.
+
+1. Create a subtask for each phase/major deliverable in the plan:
+```
+save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queueing")
+```
+
+2. For the first subtask you're about to work on, read the relevant code and compose a checklist of concrete implementation steps. Post it as a comment on that subtask.
+
+3. Move the first subtask to **Working**.
+
+Use a **haiku subagent** for creating subtasks and posting checklists.
+
+Don't create checklists for future subtasks yet — create them when you pick each one up. This keeps them grounded in code you've actually read.
+
+### Create the TodoWrite list:
+Build a TodoWrite list from the checklist you just created. This is your session-scoped execution tracker. Include:
+- Every step from the checklist, in execution order
+- A final task: "Verify implementation against plan"
+
+Mark the first task as `in_progress`.
+
+## Step 5: Implement
+
+Begin coding, following the TodoWrite list. As you work:
+
+### Progress tracking:
+- Mark TodoWrite tasks complete immediately as you finish each one (don't batch)
+- Periodically dispatch a **haiku subagent** to check off completed checklist items in Linear (every 2-3 completed items, not after every single one)
+- If you discover the task list needs to change: **pause coding**, update both the TodoWrite list and the Linear checklist, then continue
+
+### Scope discipline:
+The plan is scope-locked. You may perform localized code hygiene (formatting, fixing an adjacent typo) but nothing beyond that. If you feel tempted to introduce refactoring that isn't in the plan:
+1. Stop coding
+2. Describe the refactoring, its justification, and its implications
+3. Wait for user approval before continuing
+
+### When uncertain:
+If you encounter ambiguity or a decision the plan doesn't cover:
+1. Stop coding
+2. Describe the uncertainty concisely
+3. Wait for clarification before continuing
+
+### When stuck:
+If you hit a blocker:
+1. Use the `counselors` CLI to explore options that align with the plan
+2. If counselors yields a path forward — take it, but note what happened
+3. If no path aligns with the plan — stop coding, describe the difficulty, and wait for guidance
+
+### When deviating:
+If you discover the task list must change to successfully implement the plan:
+1. Stop coding
+2. Update your TodoWrite list and the Linear checklist
+3. You may then continue without waiting for confirmation — the updated list is your authorization
+
+### Tool selection:
+Before each task, briefly consider which tools are highest leverage:
+- Serena LSP for structural navigation and symbol-level edits
+- ColGrep for behavioral/intent queries
+- ast-grep for structural pattern matching
+- Grep for exact text matches
+
+## Step 6: Completion
+
+When you believe implementation is complete:
+
+### 6a. Plan-diff check:
+Re-read the original plan document. Compare it against what was implemented. Look for:
+- **Gaps** — planned steps that weren't executed
+- **Deviations** — implementation that diverged from the plan
+- **Scope creep** — work that wasn't in the plan
+
+Remediate any issues before declaring completion.
+
+### 6b. Finalize Linear artifacts:
+Use a **haiku subagent** to:
+- Check off any remaining checklist items
+- Move the issue (or current subtask) to **Reviewing**
+- If all subtasks of a feature are complete, move the parent to **Reviewing**
+
+### 6c. Post completion summary:
+Compose a summary and present it in the conversation AND post it as a comment on the Linear issue (via haiku subagent). The summary should include:
+
+- **What was done** — concrete list of changes, files touched
+- **Assumptions made** — decisions you made without asking
+- **Challenges and resolutions** — anything that didn't go smoothly, including any use of `counselors` CLI
+- **Insights** — anything learned that would be valuable for future work on this codebase, especially guidance that would help other agents working on the project
+
+### 6d. Confirm to user:
+**"Implementation is complete and moved to Reviewing. Summary posted above and on the Linear issue. Please review when ready — use `/complete TEC-xxx` to mark it Running, or `/remediate TEC-xxx` if there are issues to address."**

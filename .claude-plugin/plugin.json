@@ -1,0 +1,8 @@
+{
+  "name": "linear-workflow",
+  "description": "Linear-driven development workflow for Claude Code — planning, implementation, review, and completion lifecycle with edit locking during planning mode.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Eric Willroth"
+  }
+}
