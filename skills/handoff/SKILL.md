@@ -33,6 +33,7 @@ Use a **haiku subagent** for all Linear writes.
 
 ### If implementation was in flight:
 - Update checklist progress by **editing the checklist comment or description in-place** (check off completed items) — do NOT post a new comment showing completion
+- **Comment ordering**: When looking for the checklist comment to update, read comments chronologically (oldest→newest). An issue may have comments from multiple sessions or remediation cycles — Linear's `list_comments` returns newest-first. Always target the checklist from the **current** session/cycle. Never edit comments from a previous cycle — they are historical artifacts.
 - If a subtask is partially complete, add a comment noting where work stopped and what remains
 - Move completed subtasks to **Reviewing** if their checklists are fully done
 - Do NOT move issues to Reviewing unless the work is actually complete

@@ -117,6 +117,7 @@ Begin coding, following the TodoWrite list. As you work:
 ### Progress tracking:
 - Mark TodoWrite tasks complete immediately as you finish each one (don't batch)
 - **After every single completed item**, dispatch a **haiku subagent** to check off that item in the Linear checklist (edit the description or comment in-place). Do NOT batch these — every completion triggers an immediate Linear update.
+- **Comment ordering**: When editing a checklist comment (not description), ensure you're editing the correct one. An issue may have comments from multiple sessions or remediation cycles. Linear's `list_comments` returns newest-first — read chronologically (oldest→newest) and target the checklist from the **current** session or cycle. Never edit comments from a previous cycle.
 - If you discover the task list needs to change: **pause coding**, update both the TodoWrite list and the Linear checklist, then continue
 
 ### Subtask status management:

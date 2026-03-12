@@ -75,9 +75,13 @@ Show the user the organized comment you posted, and confirm:
 
 ### Step 2F: Fetch Issue & Read Remediation Feedback
 
-Fetch the issue and its comments. Find the most recent comment containing `## Remediation Feedback`. This is the feedback to act on.
+Fetch the issue and its comments. **Read comments chronologically (oldest → newest)** to find the correct remediation feedback. An issue may have multiple remediation cycles — you need the **most recent** `## Remediation Feedback` comment, which will be the one posted *after* the last "Remediation Complete" or "Remediation Summary" comment.
 
-If no remediation comment is found, tell the user: **"No remediation feedback found on TEC-123. Use `/remediate TEC-123 <your feedback>` to post feedback first."**
+**Important**: Linear's `list_comments` returns newest-first. Reverse the order mentally or explicitly to find the latest remediation cycle. Never edit comments from a previous remediation cycle — they are historical artifacts.
+
+If no unresolved remediation comment is found, also check for raw error reports (stack traces, error dumps) posted after the last completion — these may be the user's new feedback even without the `## Remediation Feedback` header.
+
+If nothing applicable is found, tell the user: **"No remediation feedback found on TEC-123. Use `/remediate TEC-123 <your feedback>` to post feedback first."**
 
 ### Step 3F: Summarize to User
 
@@ -90,7 +94,7 @@ Use a **haiku subagent** to:
 1. Move the issue to **Working** status
 2. If the issue has a parent, move the parent to **Working** if it's in Planning or Queueing
 3. Remove the **Remediation** label
-4. Post a **Remediation Checklist** comment derived from the feedback:
+4. Post a **new** Remediation Checklist comment derived from the feedback (never reuse a previous cycle's checklist comment):
 
 ```markdown
 ## Remediation Checklist
