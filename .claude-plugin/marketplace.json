@@ -1,0 +1,21 @@
+{
+  "name": "linear-workflow",
+  "owner": {
+    "name": "Eric Willroth"
+  },
+  "metadata": {
+    "description": "Linear-driven development workflow for Claude Code — planning, implementation, review, and completion lifecycle with edit locking during planning mode.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "linear-workflow",
+      "source": ".",
+      "description": "Linear-driven development workflow with 7 skills: /plan, /approve, /release, /implement, /handoff, /remediate, /complete. Includes planning mode edit locking.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Eric Willroth"
+      }
+    }
+  ]
+}
