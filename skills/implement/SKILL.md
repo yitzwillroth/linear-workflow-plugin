@@ -32,20 +32,20 @@ Infer the target from conversation context — typically the issue just created 
 
 ## Step 2: Move to Working
 
-Move the target issue to **Working**:
+Move the target issue to **Working** and assign it to yourself (the Claude bot user):
 
 ```
-save_issue(id: "<issue-id>", state: "Working")
+save_issue(id: "<issue-id>", state: "Working", assignee: "me")
 ```
 
 ### For Features with existing phase sub-issues:
 If the target is a Feature and already has phase sub-issues (created by `/approve`), move **only the first sub-issue** to Working. Leave the remaining sub-issues at their current status — they will be moved to Working individually as you begin work on each one.
 
 ```
-# Move parent to Working
-save_issue(id: "<parent-id>", state: "Working")
-# Move ONLY the first phase sub-issue to Working
-save_issue(id: "<first-sub-issue-id>", state: "Working")
+# Move parent to Working and assign to self
+save_issue(id: "<parent-id>", state: "Working", assignee: "me")
+# Move ONLY the first phase sub-issue to Working and assign to self
+save_issue(id: "<first-sub-issue-id>", state: "Working", assignee: "me")
 ```
 
 ### Promote parent issue if needed:
