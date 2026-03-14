@@ -30,7 +30,47 @@ Infer the target from conversation context — typically the issue just created 
 - The issue should be in **Scheduling** or **Queuing** status. If it's in Planning, ask: "This issue is still in Planning. Should I proceed, or did you want to plan it first with `/plan`?"
 - The issue should have a plan document attached. If it doesn't, ask: "I don't see a plan document on this issue. Should I proceed without one, or create a plan first?"
 
-## Step 2: Move to Working
+## Step 2: Create Worktree and Branch
+
+All implementation work happens in a git worktree to isolate changes from the main checkout (and from other agents working in parallel).
+
+### Create the worktree:
+
+Derive the issue short ID (e.g., `T-38` from `TEC-38`) and compose a branch name:
+
+```bash
+# From the project root:
+git worktree add worktrees/<issue-short-id> -b <type>/<issue-short-id>-<slug> develop
+```
+
+Example:
+```bash
+git worktree add worktrees/T-38 -b chore/T-38-mechanical-enforcement develop
+```
+
+**All subsequent work in this session happens inside `worktrees/<issue-short-id>/`.** Change your working directory there immediately.
+
+### Install dependencies:
+
+```bash
+cd worktrees/<issue-short-id>
+composer install
+```
+
+### Link Herd sites for manual testing:
+
+Link any app directories that may need browser testing. Use the naming convention `<app>-<issue-short-id>`:
+
+```bash
+cd worktrees/<issue-short-id>/apps/bench/public && herd link bench-<issue-short-id>
+cd worktrees/<issue-short-id>/apps/observatory/public && herd link observatory-<issue-short-id>
+```
+
+This serves the worktree at `bench-<issue-short-id>.test` and `observatory-<issue-short-id>.test`, allowing manual testing without disrupting the main checkout's Herd sites.
+
+Only link apps that are relevant to the work — if you're only touching packages, `bench` is sufficient.
+
+## Step 3: Move to Working
 
 Move the target issue to **Working**:
 
@@ -53,7 +93,7 @@ If the issue is a story (has a parent epic), check the parent's status. If the p
 
 Use a **haiku subagent** for these status updates.
 
-## Step 3: Read the Plan
+## Step 4: Read the Plan
 
 Read **ALL** documents attached to the issue — the implementation plan AND any referenced exploratory or background documents. Don't rely solely on the issue description; the real detail is in the plan documents.
 
@@ -65,7 +105,7 @@ Understand:
 
 If there's a referenced exploratory document (linked from the issue), read that too for broader context.
 
-## Step 4: Build the Execution Scaffolding
+## Step 5: Build the Execution Scaffolding
 
 Re-read the plan's Implementation Steps. Determine the issue type from its labels.
 
@@ -95,7 +135,7 @@ The stories are already created with full descriptions. Do NOT recreate them. In
 
 1. Read the first story's description to understand the phase scope.
 2. Compose a checklist of concrete implementation steps and append it to the **story's description body**.
-3. The first story should already be in Working (moved in Step 2).
+3. The first story should already be in Working (moved in Step 3).
 
 #### If no phase stories exist yet:
 Create a story for each phase/major deliverable in the plan:
@@ -129,7 +169,7 @@ Build a TodoWrite list from the checklist you just created. This is your session
 
 Mark the first task as `in_progress`.
 
-## Step 5: Implement
+## Step 6: Implement
 
 Begin coding, following the TodoWrite list. As you work:
 
@@ -175,11 +215,11 @@ Before each task, briefly consider which tools are highest leverage:
 - ast-grep for structural pattern matching
 - Grep for exact text matches
 
-## Step 6: Completion
+## Step 7: Completion
 
 When you believe implementation is complete:
 
-### 6a. Plan-diff check:
+### 7a. Plan-diff check:
 Re-read the original plan document. Compare it against what was implemented. Look for:
 - **Gaps** — planned steps that weren't executed
 - **Deviations** — implementation that diverged from the plan
@@ -187,13 +227,13 @@ Re-read the original plan document. Compare it against what was implemented. Loo
 
 Remediate any issues before declaring completion.
 
-### 6b. Finalize Linear artifacts:
+### 7b. Finalize Linear artifacts:
 Use a **haiku subagent** to:
 - Check off any remaining checklist items (edit in-place)
 - Move the issue (or current story) to **Reviewing**
 - If all stories of an epic are complete, move the epic to **Reviewing**
 
-### 6c. Post completion summary:
+### 7c. Post completion summary:
 Compose a summary and present it in the conversation AND post it as a comment on the Linear issue (via haiku subagent). The summary should include:
 
 - **What was done** — concrete list of changes, files touched
@@ -205,7 +245,7 @@ Do NOT repost the full checklist in the completion summary — it's already trac
 
 Include the attribution signature on the completion comment.
 
-### 6d. Push branch and open PR:
+### 7d. Push branch and open PR:
 
 After all stories are committed and CI is green, push the epic branch and open a PR to `develop`:
 
@@ -244,5 +284,5 @@ EOF
 - Each commit on the branch should use the **sub-issue identifier** as its prefix (e.g., `[T-40]`, not `[T-38]`).
 - The squash merge happens later via `/accept` — the PR exists for review, not for merge mechanics.
 
-### 6e. Confirm to user:
+### 7e. Confirm to user:
 **"Implementation is complete and moved to Reviewing. PR opened: [link]. Summary posted on the Linear issue. Please review when ready — use `/accept TEC-xxx` to squash merge and advance to Running, or `/remediate TEC-xxx` if there are issues to address."**

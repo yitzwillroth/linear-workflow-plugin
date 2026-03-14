@@ -5,7 +5,7 @@ description: "Accept a completed implementation: squash merge to develop, advanc
 
 # Accept
 
-The user has reviewed the implementation and accepted it. Squash merge the epic branch into develop, advance all associated Linear issues to Running, and clean up.
+The user has reviewed the implementation and accepted it. Squash merge the epic branch into develop, advance all associated Linear issues to Running, tear down the worktree, and clean up.
 
 ## Attribution
 
@@ -38,35 +38,31 @@ Infer from conversation context — typically the issue just implemented. Check 
 3. The branch should have commits ahead of `develop`
 
 ### Check for a GitHub PR:
-Run `gh pr list --head <branch-name>` to see if a PR exists for this branch.
+Run `gh pr list --head <branch-name>` to see if a PR exists for this branch. Note the PR number — you'll close it after the local merge (Step 3).
 
-- **PR exists** → use `gh pr merge` for the squash merge (Step 3a)
-- **No PR exists** → perform a local squash merge (Step 3b)
+## Step 3: Squash Merge (always local)
 
-## Step 3a: Squash Merge via PR
+**All merges are performed locally**, never via the GitHub PR merge button. This is required because implementation happens in git worktrees — the merge must be done from the main checkout to properly clean up the worktree and branch.
 
-Compose the squash merge commit message (see Step 4 for format), then:
+If you're currently inside a worktree (`worktrees/<issue-short-id>/`), change to the **main checkout** first.
 
+### Ensure you're on develop in the main checkout:
 ```bash
-gh pr merge <pr-number> --squash --subject "<title>" --body "<body>"
+cd <project-root>  # NOT the worktree
+git checkout develop
+git pull origin develop
 ```
 
-After the merge completes:
-1. `git checkout develop && git pull origin develop`
-2. `git branch -D <epic-branch>` (force-delete — squash merges don't register as merged)
-
-## Step 3b: Local Squash Merge (no PR)
-
-If no PR exists:
-
+### Squash merge:
 ```bash
-git checkout develop
 git merge --squash <epic-branch>
 git commit -m "<composed message>"  # See Step 4 for format
-git branch -D <epic-branch>
 ```
 
-Inform the user: "No PR found — performed local squash merge. Push develop when ready: `git push origin develop`"
+If a PR exists, close it after the local merge:
+```bash
+gh pr close <pr-number> --comment "Squash merged locally to develop."
+```
 
 ## Step 4: Compose the Squash Merge Commit Message
 
@@ -126,7 +122,28 @@ PR: <full-pr-url>
 - **Every story moves to Running.** Do not skip any, regardless of current status.
 - **If the issue has a parent** (is itself a story of a larger epic), check whether ALL siblings are now Running. If yes, move the parent to Running too. If no, report which siblings remain.
 
-## Step 6: Confirm
+## Step 6: Clean Up Worktree and Herd Links
+
+### Unlink Herd sites:
+Remove any Herd links created for this worktree:
+
+```bash
+herd unlink bench-<issue-short-id>
+herd unlink observatory-<issue-short-id>
+```
+
+Ignore errors if a link doesn't exist (not all issues link both apps).
+
+### Remove the worktree and branch:
+
+```bash
+git worktree remove worktrees/<issue-short-id>
+git branch -D <epic-branch>
+```
+
+The worktree must be removed before the branch can be deleted. Use `-D` (force) because squash merges don't register as merged in git's DAG.
+
+## Step 7: Confirm
 
 **"TEC-123 accepted: squash merged to develop and moved to Running. Branch `chore/T-38-...` deleted."**
 
@@ -140,8 +157,8 @@ If local merge (no PR): append **"Push develop when ready: `git push origin deve
 
 ## Important Rules
 
-1. **Always squash merge.** Never fast-forward or create merge commits on develop.
-2. **Always force-delete the branch** (`-D`). Squash merges don't register as merged in git's DAG, so `-d` will fail.
+1. **Always squash merge locally.** Never fast-forward, create merge commits, or merge via GitHub's PR button. Local merge is required to properly clean up the worktree.
+2. **Always clean up worktrees and Herd links.** After merging, remove the worktree, delete the branch, and unlink Herd sites.
 3. **Always cascade status to stories.** Linear does not propagate status from parent to children.
 4. **The commit message is a delivery record.** It should be comprehensive enough that someone reading `git log develop` can understand what shipped without opening Linear. The Notes section is especially important — it captures the *why* and the *how*, not just the *what*.
 5. **Run `just ci` before merging** if you haven't already confirmed the branch is green. Never merge a red branch.
