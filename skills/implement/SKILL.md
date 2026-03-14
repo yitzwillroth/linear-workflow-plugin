@@ -62,11 +62,11 @@ composer install
 Link any app directories that may need browser testing. Use dots in the link name to get nested subdomains under the existing `hubble.test` domain:
 
 ```bash
-cd worktrees/<issue-short-id>/apps/bench/public && herd link bench.<issue-short-id>.hubble
-cd worktrees/<issue-short-id>/apps/observatory/public && herd link observatory.<issue-short-id>.hubble
+cd worktrees/<issue-short-id>/apps/bench/public && herd link <issue-short-id>.bench.hubble
+cd worktrees/<issue-short-id>/apps/observatory/public && herd link <issue-short-id>.observatory.hubble
 ```
 
-This serves the worktree at `bench.<issue-short-id>.hubble.test` and `observatory.<issue-short-id>.hubble.test` (e.g., `bench.T-45.hubble.test`), keeping worktree sites visually grouped with the main `bench.hubble.test` and `observatory.hubble.test`.
+This serves the worktree at `<issue-short-id>.bench.hubble.test` and `<issue-short-id>.observatory.hubble.test` (e.g., `T-45.bench.hubble.test`), keeping worktree sites visually grouped with the main `bench.hubble.test` and `observatory.hubble.test`.
 
 Only link apps that are relevant to the work — if you're only touching packages, `bench` is sufficient.
 
