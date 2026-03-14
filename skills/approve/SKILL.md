@@ -50,7 +50,7 @@ If the exploration has matured into an actionable epic:
 
 1. Create a parent issue labeled **Epic** for the epic:
 ```
-save_issue(title: "<epic title>", team: "Technologentsia", project: "<project>", labels: ["Epic"], state: "Scheduling")
+save_issue(title: "<epic title>", team: "HubbleOps", project: "<project>", labels: ["Epic"], state: "Scheduling")
 ```
 
 2. Create a new implementation plan document attached to that issue (distinct from the exploratory project document):
@@ -98,7 +98,7 @@ Read the plan document. If the Implementation Steps section groups work into num
 ```
 save_issue(
     title: "Phase 1: Backend — Hubble Fallback Stats Service",
-    team: "Technologentsia",
+    team: "HubbleOps",
     project: "<project>",
     labels: ["Story"],
     parentId: "<parent-issue-id>",
@@ -141,7 +141,7 @@ Summarize what was done:
 - Current status of the issue(s)
 - Where the plan document lives
 
-Close with: **"Plan is approved and artifacts are finalized. Use `/implement` (or `/implement TEC-xxx`) when you're ready to start building."**
+Close with: **"Plan is approved and artifacts are finalized. Use `/implement` (or `/implement HUB-xxx`) when you're ready to start building."**
 
 ## Important Rules
 

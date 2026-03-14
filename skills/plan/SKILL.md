@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Enter custom planning mode. Locks editing tools, guides thorough codebase exploration, and writes the plan to a Linear document. Invoke with /plan TEC-12, /plan hubble, or just /plan. Supports an optional prompt after the target.
+description: Enter custom planning mode. Locks editing tools, guides thorough codebase exploration, and writes the plan to a Linear document. Invoke with /plan HUB-12, /plan hubble, or just /plan. Supports an optional prompt after the target.
 ---
 
 # Custom Planning Mode
@@ -46,7 +46,7 @@ Parsing is positional. Use these rules in order — stop at the first match.
 
 | Input | Target | Prompt |
 |---|---|---|
-| `/plan TEC-12 refactor the buffer to use Redis` | Issue TEC-12 | "refactor the buffer to use Redis" |
+| `/plan HUB-12 refactor the buffer to use Redis` | Issue HUB-12 | "refactor the buffer to use Redis" |
 | `/plan hubble add rate limiting` | Project hubble | "add rate limiting" |
 | `/plan hubble` | Project hubble | (none — explore and ask) |
 | `/plan add rate limiting to the buffer` | **ask project** | "add rate limiting to the buffer" |
@@ -54,7 +54,7 @@ Parsing is positional. Use these rules in order — stop at the first match.
 
 ### Determining plan placement:
 
-The user tells you where the plan goes and what kind of work this is. Don't assume. If context makes it obvious (e.g., `/plan TEC-12` is clearly an issue-level plan), proceed. Otherwise, ask:
+The user tells you where the plan goes and what kind of work this is. Don't assume. If context makes it obvious (e.g., `/plan HUB-12` is clearly an issue-level plan), proceed. Otherwise, ask:
 
 - "Should this be an exploratory document on the project, or a tactical implementation plan on an issue?"
 
@@ -70,7 +70,7 @@ The prompt is the user's initial direction. It replaces the "ask what to plan" s
 ### Resolving projects:
 Always call `list_projects` on Linear to confirm project names. Do not guess or infer from the working directory. Project matching is case-insensitive.
 
-### For existing issues (`TEC-12`):
+### For existing issues (`HUB-12`):
 Fetch the issue with `get_issue` to understand the task. The issue description plus any prompt is your starting context.
 
 ### For new implementation plans (create issue + plan):
@@ -153,7 +153,7 @@ Check if the issue already has a plan document. If it does, update it with `upda
 
 **For implementation plans (create issue + plan):**
 ```
-save_issue(title: "<title from conversation>", team: "Technologentsia", project: "<project>", labels: ["Task"])
+save_issue(title: "<title from conversation>", team: "HubbleOps", project: "<project>", labels: ["Task"])
 create_document(issue: "<new issue identifier>", title: "Plan: <brief description>", content: <plan>)
 ```
 
@@ -166,7 +166,7 @@ create_document(project: "<project>", title: "Exploration: <brief description>",
 
 **For existing issue plans:**
 ```
-create_document(issue: "TEC-12", title: "Plan: <brief description>", content: <plan>)
+create_document(issue: "HUB-12", title: "Plan: <brief description>", content: <plan>)
 ```
 
 ### Plan document structure:

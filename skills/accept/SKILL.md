@@ -1,6 +1,6 @@
 ---
 name: accept
-description: "Accept a completed implementation: squash merge to develop, advance all Linear cards to Running, clean up. Usage: /accept TEC-123"
+description: "Accept a completed implementation: squash merge to develop, advance all Linear cards to Running, clean up. Usage: /accept HUB-123"
 ---
 
 # Accept
@@ -20,14 +20,14 @@ Derive the session UUID from the most recently modified JSONL transcript file in
 
 ## Step 1: Identify the Target Issue
 
-### With an argument (`/accept TEC-123`):
-Fetch the issue with `get_issue(id: "TEC-123")`.
+### With an argument (`/accept HUB-123`):
+Fetch the issue with `get_issue(id: "HUB-123")`.
 
 ### Without an argument (`/accept`):
-Infer from conversation context — typically the issue just implemented. Check the current git branch name for a clue (e.g., `chore/T-38-mechanical-enforcement` → T-38). If ambiguous, ask.
+Infer from conversation context — typically the issue just implemented. Check the current git branch name for a clue (e.g., `chore/HUB-38-mechanical-enforcement` → HUB-38). If ambiguous, ask.
 
 ### Validate readiness:
-- The issue should be in **Reviewing** status. If it's in Working, warn: "TEC-123 is still in Working. Are you sure it's ready to accept?"
+- The issue should be in **Reviewing** status. If it's in Working, warn: "HUB-123 is still in Working. Are you sure it's ready to accept?"
 - If the issue has stories (sub-issues), ALL stories should be in Reviewing or Running. If any are in Working or earlier, warn and list the incomplete stories.
 
 ## Step 2: Identify the Branch and PR
@@ -71,15 +71,15 @@ Read the commit log on the epic branch (`git log develop..<branch> --oneline`) a
 ### Format:
 
 ```
-[TEC-NNN] type(scope): brief summary
+[HUB-NNN] type(scope): brief summary
 
 One-paragraph description of what was accomplished and why.
 
 ## Stories completed
 
-- [TEC-aaa] Brief description of story 1
-- [TEC-bbb] Brief description of story 2
-- [TEC-ccc] Brief description of story 3
+- [HUB-aaa] Brief description of story 1
+- [HUB-bbb] Brief description of story 2
+- [HUB-ccc] Brief description of story 3
 
 ## Notes
 
@@ -94,7 +94,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
 
 ### Rules for the commit message:
-- The `[TEC-NNN]` prefix is the **parent epic** issue identifier
+- The `[HUB-NNN]` prefix is the **parent epic** issue identifier
 - The `type` follows conventional commits: `feat`, `fix`, `chore`, `refactor`, `test`, `docs`
 - Each story in "Stories completed" uses the **sub-issue** identifier
 - The plan URL comes from the issue's attached document
@@ -124,15 +124,14 @@ PR: <full-pr-url>
 
 ## Step 6: Clean Up Worktree and Herd Links
 
-### Unlink Herd sites:
-Remove any Herd links created for this worktree:
+### Unlink Herd site:
+Remove the Herd link created for this worktree:
 
 ```bash
-herd unlink <issue-short-id>.hubble
-herd unlink <issue-short-id>.observatory.hubble
+herd unlink <issue-short-id>
 ```
 
-Ignore errors if a link doesn't exist (not all issues link both apps).
+Ignore errors if the link doesn't exist.
 
 ### Remove the worktree and branch:
 
@@ -145,13 +144,13 @@ The worktree must be removed before the branch can be deleted. Use `-D` (force) 
 
 ## Step 7: Confirm
 
-**"TEC-123 accepted: squash merged to develop and moved to Running. Branch `chore/T-38-...` deleted."**
+**"HUB-123 accepted: squash merged to develop and moved to Running. Branch `chore/HUB-38-...` deleted."**
 
-If stories were cascaded: **"TEC-123 and N stories moved to Running."**
+If stories were cascaded: **"HUB-123 and N stories moved to Running."**
 
-If a parent was also completed: **"All stories of TEC-100 are now complete — TEC-100 also moved to Running."**
+If a parent was also completed: **"All stories of HUB-100 are now complete — HUB-100 also moved to Running."**
 
-If siblings remain: **"Parent TEC-100 still has open stories: TEC-124 (Reviewing), TEC-125 (Working)."**
+If siblings remain: **"Parent HUB-100 still has open stories: HUB-124 (Reviewing), HUB-125 (Working)."**
 
 If local merge (no PR): append **"Push develop when ready: `git push origin develop`"**
 

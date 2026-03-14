@@ -121,7 +121,7 @@ Install the [Linear MCP server](https://github.com/linear/linear-mcp) so Claude 
 - **Use haiku subagents** for all Linear write operations to save tokens. Opus reads and composes, haiku executes CRUD.
 - **`/accept` requires human initiation** — the agent performs the merge mechanics, but only after the human explicitly invokes `/accept`.
 - **Remediation items are prioritized** over fresh work when agent picks from the board.
-- **Cross-session continuity** via Linear: `/implement TEC-xxx` in a new session reads plan + checklists to reconstruct state.
+- **Cross-session continuity** via Linear: `/implement HUB-xxx` in a new session reads plan + checklists to reconstruct state.
 
 ## Dependencies
 

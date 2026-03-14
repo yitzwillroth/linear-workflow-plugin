@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Start implementation of a planned issue. Creates stories (epics) or checklists (tasks), builds a TodoWrite list, and begins coding. Invoke with /implement TEC-123 or just /implement if the target is clear from context.
+description: Start implementation of a planned issue. Creates stories (epics) or checklists (tasks), builds a TodoWrite list, and begins coding. Invoke with /implement HUB-123 or just /implement if the target is clear from context.
 ---
 
 # Implement
@@ -20,8 +20,8 @@ Derive the session UUID from the most recently modified JSONL transcript file in
 
 ## Step 1: Identify the Target Issue
 
-### With an argument (`/implement TEC-123`):
-Fetch the issue with `get_issue(id: "TEC-123")`.
+### With an argument (`/implement HUB-123`):
+Fetch the issue with `get_issue(id: "HUB-123")`.
 
 ### Without an argument (`/implement`):
 Infer the target from conversation context — typically the issue just created or discussed via `/plan` and `/approve`. If the target is ambiguous, ask: "Which issue should I implement? I see we've been discussing [X] and [Y]."
@@ -36,7 +36,7 @@ All implementation work happens in a git worktree to isolate changes from the ma
 
 ### Create the worktree:
 
-Derive the issue short ID (e.g., `T-38` from `TEC-38`) and compose a branch name:
+Derive the issue short ID (e.g., `HUB-38`) and compose a branch name:
 
 ```bash
 # From the project root:
@@ -45,7 +45,7 @@ git worktree add worktrees/<issue-short-id> -b <type>/<issue-short-id>-<slug> de
 
 Example:
 ```bash
-git worktree add worktrees/T-38 -b chore/T-38-mechanical-enforcement develop
+git worktree add worktrees/HUB-38 -b chore/HUB-38-mechanical-enforcement develop
 ```
 
 **All subsequent work in this session happens inside `worktrees/<issue-short-id>/`.** Change your working directory there immediately.
@@ -57,22 +57,15 @@ cd worktrees/<issue-short-id>
 composer install
 ```
 
-### Link Herd sites for manual testing:
+### Link Herd site for manual testing:
 
-Link app directories that may need browser testing. Bench (the primary dev surface) gets a short subdomain under `hubble.test`:
+Link the relevant app directory for browser testing. The issue short ID becomes the `.test` subdomain:
 
 ```bash
-cd worktrees/<issue-short-id>/apps/bench/public && herd link <issue-short-id>.hubble
+cd worktrees/<issue-short-id>/apps/<app>/public && herd link <issue-short-id>
 ```
 
-This serves bench at `<issue-short-id>.hubble.test` (e.g., `T-45.hubble.test`).
-
-If observatory is also needed:
-```bash
-cd worktrees/<issue-short-id>/apps/observatory/public && herd link <issue-short-id>.observatory.hubble
-```
-
-Only link apps that are relevant to the work — if you're only touching packages, `bench` is sufficient.
+This serves the app at `<issue-short-id>.test` (e.g., `hub-38.test`). Use `bench` as the app unless the work is observatory-specific.
 
 ## Step 3: Move to Working
 
@@ -144,7 +137,7 @@ The stories are already created with full descriptions. Do NOT recreate them. In
 #### If no phase stories exist yet:
 Create a story for each phase/major deliverable in the plan:
 ```
-save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queuing")
+save_issue(title: "<phase title>", team: "HubbleOps", parentId: "<parent-issue-id>", state: "Queuing")
 ```
 Then move the first story to **Working**.
 
@@ -264,13 +257,13 @@ git push -u origin <epic-branch>
    - Include a structured body with the completion summary
 
 ```bash
-gh pr create --base develop --title "[TEC-NNN] <epic title>" --body "$(cat <<'EOF'
+gh pr create --base develop --title "[HUB-NNN] <epic title>" --body "$(cat <<'EOF'
 ## Summary
 <brief description of what this epic delivers>
 
 ## Stories
-- [TEC-aaa] Story 1 description
-- [TEC-bbb] Story 2 description
+- [HUB-aaa] Story 1 description
+- [HUB-bbb] Story 2 description
 - ...
 
 ## Notes
@@ -285,8 +278,8 @@ EOF
 
 **Important PR guidance:**
 - **Do NOT squash before opening the PR.** Keep discrete story commits visible so the reviewer can see each step individually.
-- Each commit on the branch should use the **sub-issue identifier** as its prefix (e.g., `[T-40]`, not `[T-38]`).
+- Each commit on the branch should use the **sub-issue identifier** as its prefix (e.g., `[HUB-40]`, not `[HUB-38]`).
 - The squash merge happens later via `/accept` — the PR exists for review, not for merge mechanics.
 
 ### 7e. Confirm to user:
-**"Implementation is complete and moved to Reviewing. PR opened: [link]. Summary posted on the Linear issue. Please review when ready — use `/accept TEC-xxx` to squash merge and advance to Running, or `/remediate TEC-xxx` if there are issues to address."**
+**"Implementation is complete and moved to Reviewing. PR opened: [link]. Summary posted on the Linear issue. Please review when ready — use `/accept HUB-xxx` to squash merge and advance to Running, or `/remediate HUB-xxx` if there are issues to address."**

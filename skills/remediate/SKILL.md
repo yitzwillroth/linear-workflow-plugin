@@ -1,6 +1,6 @@
 ---
 name: remediate
-description: "Dual-mode: (1) /remediate TEC-123 <feedback> posts organized feedback and moves to Queuing, or (2) /remediate TEC-123 (no feedback) reads existing remediation comment, moves to Working, and begins fixing."
+description: "Dual-mode: (1) /remediate HUB-123 <feedback> posts organized feedback and moves to Queuing, or (2) /remediate HUB-123 (no feedback) reads existing remediation comment, moves to Working, and begins fixing."
 ---
 
 # Remediate
@@ -20,7 +20,7 @@ Derive the session UUID from the most recently modified JSONL transcript file in
 
 ## Step 1: Parse Arguments & Detect Mode
 
-The first token should be an issue identifier (`TEC-123`). If not provided, infer from conversation context. If ambiguous, ask.
+The first token should be an issue identifier (`HUB-123`). If not provided, infer from conversation context. If ambiguous, ask.
 
 Everything after the identifier is the user's feedback. **The presence or absence of feedback determines the mode:**
 
@@ -67,7 +67,7 @@ Use a **haiku subagent** to do all three in one dispatch:
 
 Show the user the organized comment you posted, and confirm:
 
-**"Feedback posted to TEC-123 and moved to Queuing with Remediation label. This will be prioritized in the next implementation session."**
+**"Feedback posted to HUB-123 and moved to Queuing with Remediation label. This will be prioritized in the next implementation session."**
 
 ---
 
@@ -81,7 +81,7 @@ Fetch the issue and its comments. **Read comments chronologically (oldest → ne
 
 If no unresolved remediation comment is found, also check for raw error reports (stack traces, error dumps) posted after the last completion — these may be the user's new feedback even without the `## Remediation Feedback` header.
 
-If nothing applicable is found, tell the user: **"No remediation feedback found on TEC-123. Use `/remediate TEC-123 <your feedback>` to post feedback first."**
+If nothing applicable is found, tell the user: **"No remediation feedback found on HUB-123. Use `/remediate HUB-123 <your feedback>` to post feedback first."**
 
 ### Step 3F: Summarize to User
 
@@ -129,4 +129,4 @@ When the fix is complete:
    - Root cause
    - Files changed
    Do NOT repost the full checklist — it's already tracked in the comment.
-4. **Confirm**: **"Remediation complete for TEC-123, moved to Reviewing. Use `/accept TEC-123` to squash merge and advance to Running, or `/remediate TEC-123` again if issues remain."**
+4. **Confirm**: **"Remediation complete for HUB-123, moved to Reviewing. Use `/accept HUB-123` to squash merge and advance to Running, or `/remediate HUB-123` again if issues remain."**

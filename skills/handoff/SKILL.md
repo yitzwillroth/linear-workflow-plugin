@@ -79,4 +79,4 @@ Summarize what was captured and where:
 - What was saved to memory (if anything)
 - What the next session should start with
 
-**"Session handoff complete. [Issue TEC-xxx] has been updated with progress and a session summary. Next session can pick up with `/implement TEC-xxx`."**
+**"Session handoff complete. [Issue HUB-xxx] has been updated with progress and a session summary. Next session can pick up with `/implement HUB-xxx`."**
