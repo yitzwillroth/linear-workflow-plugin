@@ -128,8 +128,8 @@ PR: <full-pr-url>
 Remove any Herd links created for this worktree:
 
 ```bash
-herd unlink bench-<issue-short-id>
-herd unlink observatory-<issue-short-id>
+herd unlink bench.<issue-short-id>.hubble
+herd unlink observatory.<issue-short-id>.hubble
 ```
 
 Ignore errors if a link doesn't exist (not all issues link both apps).
