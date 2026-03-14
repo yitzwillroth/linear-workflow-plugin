@@ -85,7 +85,7 @@ Skip this step if nothing warrants a doc update.
 
 ## Step 5: Write the Handoff File
 
-Write a context snapshot to `~/.claude/projects/{project-path}/handoff.md`. This file is the **baton** — it exists solely so the next session can re-establish context via `/pickup`.
+Write a context snapshot to `docs/HANDOFF.md` (in the project root). This file is the **baton** — it exists solely so the next session can re-establish context via `/pickup`.
 
 The handoff file is **overwritten each time**, not appended. It's ephemeral state, not a log.
 

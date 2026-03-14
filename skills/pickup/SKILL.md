@@ -9,7 +9,7 @@ A previous session wrote a handoff file before ending. Read it and re-establish 
 
 ## Step 1: Read the Handoff File
 
-Read `~/.claude/projects/{project-path}/handoff.md`.
+Read `docs/HANDOFF.md` (in the project root).
 
 If the file doesn't exist or is empty, tell the user:
 **"No handoff file found. What would you like to work on? You can point me at a Linear issue with `/implement HUB-xxx` or describe what you'd like to do."**
