@@ -12,7 +12,7 @@ A complete skill-based workflow for Claude Code that integrates with Linear for 
 | `/implement` | Break down into subtasks/checklists, start coding | Queueing → Working |
 | `/handoff` | End-of-session: enrich artifacts, save progress | — (stays Working) |
 | `/remediate` | Post organized review feedback, route back for fixes | Reviewing → Queueing |
-| `/complete` | Mark as Running after human review | Reviewing → Running |
+| `/accept` | Mark as Running after human review | Reviewing → Running |
 
 ## Board Columns (Linear)
 
