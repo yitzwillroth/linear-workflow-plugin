@@ -10,7 +10,8 @@ A complete skill-based workflow for Claude Code that integrates with Linear for 
 | `/approve` | Finalize artifacts, create parent issue, attach plan | → Scheduling |
 | `/release` | Release planned work for implementation | Scheduling → Queueing |
 | `/implement` | Break down into stories/checklists, start coding | Queueing → Working |
-| `/handoff` | End-of-session: enrich artifacts, save progress | — (stays Working) |
+| `/handoff` | End-of-session: enrich artifacts, save learnings, write baton file | — (stays Working) |
+| `/pickup` | Resume from handoff file, re-establish context, continue work | — (reads baton) |
 | `/remediate` | Post organized review feedback, route back for fixes | Reviewing → Queueing |
 | `/accept` | Squash merge to develop, advance cards to Running | Reviewing → Running |
 
@@ -121,7 +122,7 @@ Install the [Linear MCP server](https://github.com/linear/linear-mcp) so Claude 
 - **Use haiku subagents** for all Linear write operations to save tokens. Opus reads and composes, haiku executes CRUD.
 - **`/accept` requires human initiation** — the agent performs the merge mechanics, but only after the human explicitly invokes `/accept`.
 - **Remediation items are prioritized** over fresh work when agent picks from the board.
-- **Cross-session continuity** via Linear: `/implement HUB-xxx` in a new session reads plan + checklists to reconstruct state.
+- **Cross-session continuity** via `/handoff` + `/pickup`: handoff writes a baton file with session context; pickup reads it to resume. Linear checklists provide additional state recovery via `/implement HUB-xxx`.
 
 ## Dependencies
 
