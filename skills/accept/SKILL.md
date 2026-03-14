@@ -116,6 +116,7 @@ Use a **haiku subagent** to:
 Accepted and merged to develop.
 
 Commit: `<short-sha>` on `develop`
+PR: <full-pr-url>
 
 ---
 🤖 Claude · Session {8-char-UUID}
