@@ -59,14 +59,18 @@ composer install
 
 ### Link Herd sites for manual testing:
 
-Link any app directories that may need browser testing. Use dots in the link name to get nested subdomains under the existing `hubble.test` domain:
+Link app directories that may need browser testing. Bench (the primary dev surface) gets a short subdomain under `hubble.test`:
 
 ```bash
-cd worktrees/<issue-short-id>/apps/bench/public && herd link <issue-short-id>.bench.hubble
-cd worktrees/<issue-short-id>/apps/observatory/public && herd link <issue-short-id>.observatory.hubble
+cd worktrees/<issue-short-id>/apps/bench/public && herd link <issue-short-id>.hubble
 ```
 
-This serves the worktree at `<issue-short-id>.bench.hubble.test` and `<issue-short-id>.observatory.hubble.test` (e.g., `T-45.bench.hubble.test`), keeping worktree sites visually grouped with the main `bench.hubble.test` and `observatory.hubble.test`.
+This serves bench at `<issue-short-id>.hubble.test` (e.g., `T-45.hubble.test`).
+
+If observatory is also needed:
+```bash
+cd worktrees/<issue-short-id>/apps/observatory/public && herd link <issue-short-id>.observatory.hubble
+```
 
 Only link apps that are relevant to the work — if you're only touching packages, `bench` is sufficient.
 
