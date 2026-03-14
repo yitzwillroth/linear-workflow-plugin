@@ -34,7 +34,7 @@ Determine what was planned and where the plan document lives:
 
 - If the plan was attached to an **existing issue** → you already have the issue ID and document
 - If the plan created a **new issue** (task plan) → you already have both from `/plan`
-- If the plan is a **project-level document** (feature exploration) → check whether it's now ready to become actionable (see Step 3)
+- If the plan is a **project-level document** (initiative/exploration) → check whether it's now ready to become actionable (see Step 3)
 
 ## Step 3: Create or Update Linear Artifacts
 
@@ -45,12 +45,12 @@ The issue already exists with the plan document attached. Ensure it has the **Ta
 save_issue(id: "<issue-id>", labels: ["Task"], state: "Scheduling")
 ```
 
-### For feature plans becoming actionable:
-If the exploration has matured into an actionable feature:
+### For initiative plans becoming actionable:
+If the exploration has matured into an actionable epic:
 
-1. Create a parent issue labeled **Feature** for the feature:
+1. Create a parent issue labeled **Epic** for the epic:
 ```
-save_issue(title: "<feature title>", team: "Technologentsia", project: "<project>", labels: ["Feature"], state: "Scheduling")
+save_issue(title: "<epic title>", team: "Technologentsia", project: "<project>", labels: ["Epic"], state: "Scheduling")
 ```
 
 2. Create a new implementation plan document attached to that issue (distinct from the exploratory project document):
@@ -63,9 +63,9 @@ create_document(issue: "<new issue identifier>", title: "Implementation Plan: <b
 save_issue(id: "<issue-id>", links: [{"url": "<exploratory doc URL>", "title": "Exploratory Plan"}])
 ```
 
-### For feature explorations that are NOT yet actionable:
+### For initiatives that are NOT yet actionable:
 If the plan is purely exploratory and not ready for implementation, skip issue creation. Just confirm:
-**"Exploration plan is finalized on the project. When you're ready to move this toward implementation, we can create an actionable plan and feature issue."**
+**"Initiative is finalized on the project. When you're ready to move this toward implementation, we can create an actionable plan and epic."**
 
 ## Step 4: Create Phase Sub-Issues (for phased plans)
 
@@ -77,8 +77,8 @@ Read the plan document. If the Implementation Steps section groups work into num
 ### Sub-issue creation rules:
 
 1. **Title format**: `Phase N: <phase title from plan>`
-2. **Label**: `Task` (phases are tasks under a Feature parent)
-3. **Parent**: Set `parentId` to the parent feature issue
+2. **Label**: `Story` (phases are stories under an Epic parent)
+3. **Parent**: Set `parentId` to the parent epic issue
 4. **Project**: Same project as the parent
 5. **Status**: Same status as the parent issue (typically Scheduling)
 6. **Description**: Put the **full phase content in the issue body** — NOT as a comment. Include:
@@ -100,7 +100,7 @@ save_issue(
     title: "Phase 1: Backend — Hubble Fallback Stats Service",
     team: "Technologentsia",
     project: "<project>",
-    labels: ["Task"],
+    labels: ["Story"],
     parentId: "<parent-issue-id>",
     description: "Create the backend service and DTOs that query...\n\n## Implementation Steps\n\n1. Create `QueryPerformanceHistory` DTO...\n\n## Key Details\n\n...\n\n---\n🤖 Claude · Session {8-char-UUID}"
 )
@@ -110,7 +110,7 @@ save_issue(
 
 **Linear does not automatically cascade status changes from parent to child issues.** Whenever you move the parent issue to a new status, you must also move all sub-issues to the same status.
 
-This applies in this skill (moving to Scheduling) and should be noted as a convention for other skills that move issues (e.g., `/release`, `/complete`).
+This applies in this skill (moving to Scheduling) and should be noted as a convention for other skills that move issues (e.g., `/release`, `/accept`).
 
 After creating phase sub-issues, move them all to match the parent's status:
 ```
@@ -122,7 +122,7 @@ Use parallel calls for efficiency.
 
 ## Step 6: Promote Parent Issue if Needed
 
-If the issue being approved is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queuing**, move it to **Working**:
+If the issue being approved is a story (has a parent epic), check the parent's status. If the parent is in **Planning** or **Queuing**, move it to **Working**:
 
 ```
 get_issue(id: "<issue-id>")  → check for parentId

@@ -123,10 +123,10 @@ Begin fixing, following these discipline patterns (same as /implement):
 When the fix is complete:
 
 1. **Verify** — confirm the reported issue is resolved (run tests, check the specific failure scenario)
-2. **Finalize Linear** — via haiku subagent: edit the checklist comment in-place to check off remaining items, move issue to **Reviewing**, move parent to **Reviewing** if all subtasks are done
+2. **Finalize Linear** — via haiku subagent: edit the checklist comment in-place to check off remaining items, move issue to **Reviewing**, move parent to **Reviewing** if all stories are done
 3. **Post summary** — as a comment on the issue (with attribution) and in the conversation:
    - What was fixed
    - Root cause
    - Files changed
    Do NOT repost the full checklist — it's already tracked in the comment.
-4. **Confirm**: **"Remediation complete for TEC-123, moved to Reviewing. Use `/complete TEC-123` to mark as Running, or `/remediate TEC-123` again if issues remain."**
+4. **Confirm**: **"Remediation complete for TEC-123, moved to Reviewing. Use `/accept TEC-123` to squash merge and advance to Running, or `/remediate TEC-123` again if issues remain."**

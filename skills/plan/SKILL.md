@@ -58,7 +58,7 @@ The user tells you where the plan goes and what kind of work this is. Don't assu
 
 - "Should this be an exploratory document on the project, or a tactical implementation plan on an issue?"
 
-**Exploratory plans** (project-level documents): Broader explorations, architecture decisions, feature-level thinking that may spawn tasks later. These attach to the Linear project.
+**Exploratory plans / Initiatives** (project-level documents): Broader explorations, architecture decisions, feature-level thinking that may spawn epics or tasks later. These attach to the Linear project.
 
 **Implementation plans** (issue-level documents): Tactical plans for specific work. These attach to a Linear issue. If no issue exists yet, you'll create one.
 
@@ -157,7 +157,7 @@ save_issue(title: "<title from conversation>", team: "Technologentsia", project:
 create_document(issue: "<new issue identifier>", title: "Plan: <brief description>", content: <plan>)
 ```
 
-For features, use the `Feature` label instead of `Task`.
+For epics (multi-phase work with sub-issues), use the `Epic` label instead of `Task`.
 
 **For exploratory plans (project-attached):**
 ```

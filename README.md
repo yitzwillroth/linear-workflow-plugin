@@ -9,10 +9,10 @@ A complete skill-based workflow for Claude Code that integrates with Linear for 
 | `/plan` | Explore codebase, write plan document to Linear | — (creates document) |
 | `/approve` | Finalize artifacts, create parent issue, attach plan | → Scheduling |
 | `/release` | Release planned work for implementation | Scheduling → Queueing |
-| `/implement` | Break down into subtasks/checklists, start coding | Queueing → Working |
+| `/implement` | Break down into stories/checklists, start coding | Queueing → Working |
 | `/handoff` | End-of-session: enrich artifacts, save progress | — (stays Working) |
 | `/remediate` | Post organized review feedback, route back for fixes | Reviewing → Queueing |
-| `/accept` | Mark as Running after human review | Reviewing → Running |
+| `/accept` | Squash merge to develop, advance cards to Running | Reviewing → Running |
 
 ## Board Columns (Linear)
 
@@ -27,10 +27,12 @@ Planning → Scheduling → Queueing → Working → Reviewing → Running
 - **Reviewing**: Complete, awaiting human review
 - **Running**: Human reviewed and approved
 
-## Labels
+## Issue Types & Labels
 
-- **Feature** — issue with subtasks (phases) + checklists on subtasks (steps)
-- **Task** — issue with checklists directly (no subtasks)
+- **Initiative** — exploratory plan attached to a Linear project; ideation and architecture thinking that may spawn epics
+- **Epic** — parent issue with stories (phase sub-issues) + checklists on each story
+- **Story** — sub-issue of an epic, representing one phase of implementation
+- **Task** — standalone issue with checklists directly (no sub-issues)
 - **Remediation** — needs fixes from review; prioritized over fresh work
 
 ## Installation
@@ -89,7 +91,8 @@ sed -i '' 's/YOUR_TEAM/My Team Name/g' ~/.claude/skills/{plan,approve,implement}
 ### 2. Create Linear labels
 
 Create these labels in your Linear workspace:
-- **Feature**
+- **Epic**
+- **Story**
 - **Task**
 - **Remediation**
 
@@ -116,7 +119,7 @@ Install the [Linear MCP server](https://github.com/linear/linear-mcp) so Claude 
 - **Planning and implementation are separate sessions** by default. `/approve` finalizes artifacts but does NOT start coding. `/implement` starts a fresh session with full context window.
 - **TodoWrite and Linear checklists are the same information** — composed once, posted to both. Near-zero marginal cost.
 - **Use haiku subagents** for all Linear write operations to save tokens. Opus reads and composes, haiku executes CRUD.
-- **Agent never moves issues to Running** — human in the loop required.
+- **`/accept` requires human initiation** — the agent performs the merge mechanics, but only after the human explicitly invokes `/accept`.
 - **Remediation items are prioritized** over fresh work when agent picks from the board.
 - **Cross-session continuity** via Linear: `/implement TEC-xxx` in a new session reads plan + checklists to reconstruct state.
 

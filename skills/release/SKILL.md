@@ -33,7 +33,7 @@ Use a **haiku subagent** to:
 
 ## Step 3: Cascade Status to Sub-Issues
 
-**Linear does not automatically cascade status changes from parent to child issues.** After moving the parent to Queuing, check for sub-issues (phase tasks created by `/approve`). If any exist, move **all** of them to Queuing as well.
+**Linear does not automatically cascade status changes from parent to child issues.** After moving the parent to Queuing, check for sub-issues (phase stories created by `/approve`). If any exist, move **all** of them to Queuing as well.
 
 Use a **haiku subagent** to:
 
@@ -51,4 +51,4 @@ If there are no sub-issues, skip this step silently.
 
 **"TEC-123 released to Queuing and available for implementation. Use `/implement TEC-123` to start building."**
 
-If sub-issues were cascaded: **"TEC-123 and N phase sub-issues released to Queuing. Use `/implement TEC-123` to start building."**
+If sub-issues were cascaded: **"TEC-123 and N stories released to Queuing. Use `/implement TEC-123` to start building."**

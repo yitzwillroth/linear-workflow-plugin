@@ -1,11 +1,11 @@
 ---
 name: implement
-description: Start implementation of a planned issue. Creates subtasks (features) or checklists (tasks), builds a TodoWrite list, and begins coding. Invoke with /implement TEC-123 or just /implement if the target is clear from context.
+description: Start implementation of a planned issue. Creates stories (epics) or checklists (tasks), builds a TodoWrite list, and begins coding. Invoke with /implement TEC-123 or just /implement if the target is clear from context.
 ---
 
 # Implement
 
-Begin implementation of a planned and approved issue. This skill reads the plan, creates the execution scaffolding (subtasks/checklists + TodoWrite), and starts coding.
+Begin implementation of a planned and approved issue. This skill reads the plan, creates the execution scaffolding (stories/checklists + TodoWrite), and starts coding.
 
 ## Attribution
 
@@ -38,18 +38,18 @@ Move the target issue to **Working**:
 save_issue(id: "<issue-id>", state: "Working")
 ```
 
-### For Features with existing phase sub-issues:
-If the target is a Feature and already has phase sub-issues (created by `/approve`), move **only the first sub-issue** to Working. Leave the remaining sub-issues at their current status — they will be moved to Working individually as you begin work on each one.
+### For Epics with existing phase stories:
+If the target is an Epic and already has phase stories (created by `/approve`), move **only the first story** to Working. Leave the remaining stories at their current status — they will be moved to Working individually as you begin work on each one.
 
 ```
-# Move parent to Working
-save_issue(id: "<parent-id>", state: "Working")
-# Move ONLY the first phase sub-issue to Working
-save_issue(id: "<first-sub-issue-id>", state: "Working")
+# Move epic to Working
+save_issue(id: "<epic-id>", state: "Working")
+# Move ONLY the first phase story to Working
+save_issue(id: "<first-story-id>", state: "Working")
 ```
 
 ### Promote parent issue if needed:
-If the issue is a subtask (has a parent issue), check the parent's status. If the parent is in **Planning** or **Queuing**, move it to **Working** as well.
+If the issue is a story (has a parent epic), check the parent's status. If the parent is in **Planning** or **Queuing**, move it to **Working** as well.
 
 Use a **haiku subagent** for these status updates.
 
@@ -70,7 +70,7 @@ If there's a referenced exploratory document (linked from the issue), read that 
 Re-read the plan's Implementation Steps. Determine the issue type from its labels.
 
 ### For issues labeled **Task**:
-Tasks get checklists directly in the **issue description body** (appended below the existing summary). No subtasks.
+Tasks get checklists directly in the **issue description body** (appended below the existing summary). No sub-issues.
 
 1. Compose a checklist from the implementation steps. Each item should be concrete and independently verifiable.
 2. Use a **haiku subagent** to update the issue description, appending the checklist below any existing content:
@@ -87,25 +87,25 @@ Tasks get checklists directly in the **issue description body** (appended below 
 🤖 Claude · Session {8-char-UUID}
 ```
 
-### For issues labeled **Feature**:
-Features have phase sub-issues with checklists on each.
+### For issues labeled **Epic**:
+Epics have phase stories (sub-issues) with checklists on each.
 
-#### If phase sub-issues already exist (created by `/approve`):
-The sub-issues are already created with full descriptions. Do NOT recreate them. Instead:
+#### If phase stories already exist (created by `/approve`):
+The stories are already created with full descriptions. Do NOT recreate them. Instead:
 
-1. Read the first sub-issue's description to understand the phase scope.
-2. Compose a checklist of concrete implementation steps and append it to the **sub-issue's description body**.
-3. The first sub-issue should already be in Working (moved in Step 2).
+1. Read the first story's description to understand the phase scope.
+2. Compose a checklist of concrete implementation steps and append it to the **story's description body**.
+3. The first story should already be in Working (moved in Step 2).
 
-#### If no phase sub-issues exist yet:
-Create a subtask for each phase/major deliverable in the plan:
+#### If no phase stories exist yet:
+Create a story for each phase/major deliverable in the plan:
 ```
 save_issue(title: "<phase title>", team: "Technologentsia", parentId: "<parent-issue-id>", state: "Queuing")
 ```
-Then move the first subtask to **Working**.
+Then move the first story to **Working**.
 
-#### For the first sub-issue (either case):
-Read the relevant code and compose a checklist of concrete implementation steps. Write the checklist into the **sub-issue's description body** (append below existing content if `/approve` already populated a description):
+#### For the first story (either case):
+Read the relevant code and compose a checklist of concrete implementation steps. Write the checklist into the **story's description body** (append below existing content if `/approve` already populated a description):
 
 ```markdown
 
@@ -118,9 +118,9 @@ Read the relevant code and compose a checklist of concrete implementation steps.
 🤖 Claude · Session {8-char-UUID}
 ```
 
-Use a **haiku subagent** for creating subtasks and writing descriptions.
+Use a **haiku subagent** for creating stories and writing descriptions.
 
-Don't create checklists for future sub-issues yet — create them when you pick each one up. This keeps them grounded in code you've actually read.
+Don't create checklists for future stories yet — create them when you pick each one up. This keeps them grounded in code you've actually read.
 
 ### Create the TodoWrite list:
 Build a TodoWrite list from the checklist you just created. This is your session-scoped execution tracker. Include:
@@ -139,10 +139,10 @@ Begin coding, following the TodoWrite list. As you work:
 - **Comment ordering**: When editing a checklist comment (not description), ensure you're editing the correct one. An issue may have comments from multiple sessions or remediation cycles. Linear's `list_comments` returns newest-first — read chronologically (oldest→newest) and target the checklist from the **current** session or cycle. Never edit comments from a previous cycle.
 - If you discover the task list needs to change: **pause coding**, update both the TodoWrite list and the Linear checklist, then continue
 
-### Sub-issue status management:
-- **Starting a new sub-issue**: Move it to **Working** before beginning work on it. Only one sub-issue should be in Working at a time (the one you're actively coding).
-- **Completing a sub-issue**: When its checklist is fully complete, move it to **Reviewing** immediately — don't wait for all sub-issues to be done.
-- **The parent stays in Working** until ALL sub-issues reach Reviewing or Running.
+### Story status management:
+- **Starting a new story**: Move it to **Working** before beginning work on it. Only one story should be in Working at a time (the one you're actively coding).
+- **Completing a story**: When its checklist is fully complete, move it to **Reviewing** immediately — don't wait for all stories to be done.
+- **The epic stays in Working** until ALL stories reach Reviewing or Running.
 
 ### Scope discipline:
 The plan is scope-locked. You may perform localized code hygiene (formatting, fixing an adjacent typo) but nothing beyond that. If you feel tempted to introduce refactoring that isn't in the plan:
@@ -190,8 +190,8 @@ Remediate any issues before declaring completion.
 ### 6b. Finalize Linear artifacts:
 Use a **haiku subagent** to:
 - Check off any remaining checklist items (edit in-place)
-- Move the issue (or current subtask) to **Reviewing**
-- If all subtasks of a feature are complete, move the parent to **Reviewing**
+- Move the issue (or current story) to **Reviewing**
+- If all stories of an epic are complete, move the epic to **Reviewing**
 
 ### 6c. Post completion summary:
 Compose a summary and present it in the conversation AND post it as a comment on the Linear issue (via haiku subagent). The summary should include:
