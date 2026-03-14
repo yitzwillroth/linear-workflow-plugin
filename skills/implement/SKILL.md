@@ -32,20 +32,20 @@ Infer the target from conversation context — typically the issue just created 
 
 ## Step 2: Move to Working
 
-Move the target issue to **Working** and assign it to yourself (the Claude bot user):
+Move the target issue to **Working**:
 
 ```
-save_issue(id: "<issue-id>", state: "Working", assignee: "me")
+save_issue(id: "<issue-id>", state: "Working")
 ```
 
 ### For Features with existing phase sub-issues:
 If the target is a Feature and already has phase sub-issues (created by `/approve`), move **only the first sub-issue** to Working. Leave the remaining sub-issues at their current status — they will be moved to Working individually as you begin work on each one.
 
 ```
-# Move parent to Working and assign to self
-save_issue(id: "<parent-id>", state: "Working", assignee: "me")
-# Move ONLY the first phase sub-issue to Working and assign to self
-save_issue(id: "<first-sub-issue-id>", state: "Working", assignee: "me")
+# Move parent to Working
+save_issue(id: "<parent-id>", state: "Working")
+# Move ONLY the first phase sub-issue to Working
+save_issue(id: "<first-sub-issue-id>", state: "Working")
 ```
 
 ### Promote parent issue if needed:
@@ -205,5 +205,44 @@ Do NOT repost the full checklist in the completion summary — it's already trac
 
 Include the attribution signature on the completion comment.
 
-### 6d. Confirm to user:
-**"Implementation is complete and moved to Reviewing. Summary posted above and on the Linear issue. Please review when ready — use `/complete TEC-xxx` to mark it Running, or `/remediate TEC-xxx` if there are issues to address."**
+### 6d. Push branch and open PR:
+
+After all stories are committed and CI is green, push the epic branch and open a PR to `develop`:
+
+1. Push the branch:
+```bash
+git push -u origin <epic-branch>
+```
+
+2. Open the PR with `gh pr create`. The PR should:
+   - Target `develop` (not `main`)
+   - Use the epic issue title as the PR title, prefixed with the issue identifier
+   - Include a structured body with the completion summary
+
+```bash
+gh pr create --base develop --title "[TEC-NNN] <epic title>" --body "$(cat <<'EOF'
+## Summary
+<brief description of what this epic delivers>
+
+## Stories
+- [TEC-aaa] Story 1 description
+- [TEC-bbb] Story 2 description
+- ...
+
+## Notes
+- Key decisions, challenges, deviations, and insights from implementation
+
+Plan: <linear-document-url>
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+)"
+```
+
+**Important PR guidance:**
+- **Do NOT squash before opening the PR.** Keep discrete story commits visible so the reviewer can see each step individually.
+- Each commit on the branch should use the **sub-issue identifier** as its prefix (e.g., `[T-40]`, not `[T-38]`).
+- The squash merge happens later via `/accept` — the PR exists for review, not for merge mechanics.
+
+### 6e. Confirm to user:
+**"Implementation is complete and moved to Reviewing. PR opened: [link]. Summary posted on the Linear issue. Please review when ready — use `/accept TEC-xxx` to squash merge and advance to Running, or `/remediate TEC-xxx` if there are issues to address."**
