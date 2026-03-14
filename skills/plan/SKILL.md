@@ -54,13 +54,15 @@ Parsing is positional. Use these rules in order — stop at the first match.
 
 ### Determining plan placement:
 
-The user tells you where the plan goes and what kind of work this is. Don't assume. If context makes it obvious (e.g., `/plan HUB-12` is clearly an issue-level plan), proceed. Otherwise, ask:
+The user tells you where the plan goes and what kind of work this is. Don't assume. If context makes it obvious (e.g., `/plan HUB-12` is clearly an implementation plan), proceed. Otherwise, ask:
 
-- "Should this be an exploratory document on the project, or a tactical implementation plan on an issue?"
+- "Should this be an initiative exploration, or a tactical implementation plan?"
 
-**Exploratory plans / Initiatives** (project-level documents): Broader explorations, architecture decisions, feature-level thinking that may spawn epics or tasks later. These attach to the Linear project.
+**Initiative plans** (project-level documents, durable): Broader explorations, architecture decisions, feature-level thinking that may spawn epics or tasks later. These attach to the Linear project and persist as reference material.
 
-**Implementation plans** (issue-level documents): Tactical plans for specific work. These attach to a Linear issue. If no issue exists yet, you'll create one.
+**Implementation plans** (project-level documents, temporal): Tactical plans for specific work. These also attach to the Linear project, but they are **temporal coordination artifacts** — they exist so you and the user can stay aligned during the planning conversation. When `/approve` is invoked, the plan content is materialized into Linear issues (the durable source of truth). The plan document gets attached to the epic for historical reference but is superseded by the issues.
+
+If the user provides an existing issue ID (e.g., `/plan HUB-12`), attach the plan document to that issue instead of the project.
 
 ### What to do with the prompt:
 The prompt is the user's initial direction. It replaces the "ask what to plan" step — you already know what they want. Use it as your starting context alongside any relevant conversation history. You still explore thoroughly; the prompt just gives you a head start.
@@ -73,10 +75,10 @@ Always call `list_projects` on Linear to confirm project names. Do not guess or 
 ### For existing issues (`HUB-12`):
 Fetch the issue with `get_issue` to understand the task. The issue description plus any prompt is your starting context.
 
-### For new implementation plans (create issue + plan):
-Use the prompt and conversation to understand what's being planned. Explore the codebase. When writing the plan, also create the issue with `save_issue` using a title that captures what you learned. Attach the plan doc to that issue.
+### For new implementation plans:
+Use the prompt and conversation to understand what's being planned. Explore the codebase. Create a project-level plan document. **Do not create Linear issues during planning** — issue creation happens in `/approve`, where the plan content is materialized into actionable issues with self-contained descriptions.
 
-### For exploratory plans (project-level):
+### For initiative plans (project-level):
 Use the prompt and conversation to understand the scope. Explore the codebase. Before creating the document, check for existing documents (see Step 5). Create a plan doc attached to the project.
 
 ## Step 3: Gather Context
@@ -151,15 +153,14 @@ Check if the issue already has a plan document. If it does, update it with `upda
 
 ### Creating new plans:
 
-**For implementation plans (create issue + plan):**
+**For implementation plans (project-attached, temporal):**
 ```
-save_issue(title: "<title from conversation>", team: "HubbleOps", project: "<project>", labels: ["Task"])
-create_document(issue: "<new issue identifier>", title: "Plan: <brief description>", content: <plan>)
+create_document(project: "<project>", title: "Plan: <brief description>", content: <plan>)
 ```
 
-For epics (multi-phase work with sub-issues), use the `Epic` label instead of `Task`.
+No issues are created at this stage. The plan is a coordination artifact — `/approve` will materialize it into actionable Linear issues.
 
-**For exploratory plans (project-attached):**
+**For initiative plans (project-attached, durable):**
 ```
 create_document(project: "<project>", title: "Exploration: <brief description>", content: <plan>)
 ```
@@ -202,7 +203,9 @@ Anything unresolved that needs input before starting.
 
 After creating or updating the document, share the URL with the user and say:
 
-**"Plan is ready for review: [link]. Let me know when you'd like to approve it, suggest changes, or discuss any part of it. Use `/approve` when you're ready to finalize the artifacts."**
+**"Plan is ready for review: [link]. Let me know when you'd like to approve it, suggest changes, or discuss any part of it. Use `/approve` when you're ready to create the Linear issues."**
+
+For implementation plans, remind the user that `/approve` will break the plan into actionable Linear issues — the plan document itself is a conversation artifact that will be superseded by those issues.
 
 ## Important Behavioral Rules
 

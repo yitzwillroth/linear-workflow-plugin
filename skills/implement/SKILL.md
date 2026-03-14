@@ -1,11 +1,11 @@
 ---
 name: implement
-description: Start implementation of a planned issue. Creates stories (epics) or checklists (tasks), builds a TodoWrite list, and begins coding. Invoke with /implement HUB-123 or just /implement if the target is clear from context.
+description: Start implementation of a planned issue. Reads self-contained story descriptions, builds a TodoWrite list from existing checklists, and begins coding. Invoke with /implement HUB-123 or just /implement if the target is clear from context.
 ---
 
 # Implement
 
-Begin implementation of a planned and approved issue. This skill reads the plan, creates the execution scaffolding (stories/checklists + TodoWrite), and starts coding.
+Begin implementation of an approved issue. This skill reads the issue's self-contained description (populated by `/approve`), builds execution scaffolding (TodoWrite from existing checklists), and starts coding.
 
 ## Attribution
 
@@ -28,7 +28,7 @@ Infer the target from conversation context — typically the issue just created 
 
 ### Validate readiness:
 - The issue should be in **Scheduling** or **Queuing** status. If it's in Planning, ask: "This issue is still in Planning. Should I proceed, or did you want to plan it first with `/plan`?"
-- The issue should have a plan document attached. If it doesn't, ask: "I don't see a plan document on this issue. Should I proceed without one, or create a plan first?"
+- The issue description should contain implementation context (objective, approach, checklist). If the description is empty or minimal, check for an attached plan document. If neither exists, ask: "This issue has no implementation context. Should I proceed, or create a plan first?"
 
 ## Step 2: Create Worktree and Branch
 
@@ -90,31 +90,39 @@ If the issue is a story (has a parent epic), check the parent's status. If the p
 
 Use a **haiku subagent** for these status updates.
 
-## Step 4: Read the Plan
+## Step 4: Read the Implementation Context
 
-Read **ALL** documents attached to the issue — the implementation plan AND any referenced exploratory or background documents. Don't rely solely on the issue description; the real detail is in the plan documents.
+**The issue description is the primary source of truth.** Stories created by `/approve` are self-contained — they include the objective, approach, checklist, and test strategy drawn from the original plan.
 
-Understand:
+Read the issue description thoroughly. Understand:
 - The objective and approach
-- The implementation steps (and phases, if any)
+- The checklist (implementation steps)
 - The test strategy
-- Any open questions (raise these with the user before proceeding)
+- Any constraints or decisions noted
 
-If there's a referenced exploratory document (linked from the issue), read that too for broader context.
+**For epic stories**: also read the parent epic's description for broader context on what the epic is setting out to achieve.
+
+**If a plan document is attached** (on the epic, as historical reference): you may read it for additional context, but the story description is authoritative. If they conflict, follow the story description.
 
 ## Step 5: Build the Execution Scaffolding
 
-Re-read the plan's Implementation Steps. Determine the issue type from its labels.
+Read the issue description and determine the issue structure from its labels and content.
 
-### For issues labeled **Task**:
-Tasks get checklists directly in the **issue description body** (appended below the existing summary). No sub-issues.
+### If a checklist already exists (created by `/approve`):
 
-1. Compose a checklist from the implementation steps. Each item should be concrete and independently verifiable.
-2. Use a **haiku subagent** to update the issue description, appending the checklist below any existing content:
+Stories created by `/approve` already have self-contained descriptions with granular checklists. **Do NOT recreate or duplicate checklists.** Instead:
+
+1. Read the existing checklist to understand the scope of work.
+2. If the checklist needs refinement after reading the actual code (e.g., a step needs splitting, or a missing step is discovered), update the existing checklist in-place via a **haiku subagent**.
+3. Proceed to building the TodoWrite list from the existing checklist.
+
+### If no checklist exists:
+
+Compose a checklist from the issue description and your understanding of the code. Write it into the **issue description body** (append below existing content):
 
 ```markdown
 
-## Implementation Checklist
+## Checklist
 - [ ] Step 1 description
 - [ ] Step 2 description
 - [ ] Step 3 description
@@ -124,40 +132,15 @@ Tasks get checklists directly in the **issue description body** (appended below 
 🤖 Claude · Session {8-char-UUID}
 ```
 
-### For issues labeled **Epic**:
-Epics have phase stories (sub-issues) with checklists on each.
+Use a **haiku subagent** for writing descriptions.
 
-#### If phase stories already exist (created by `/approve`):
-The stories are already created with full descriptions. Do NOT recreate them. Instead:
+### For epics with no stories yet:
 
-1. Read the first story's description to understand the phase scope.
-2. Compose a checklist of concrete implementation steps and append it to the **story's description body**.
-3. The first story should already be in Working (moved in Step 3).
-
-#### If no phase stories exist yet:
-Create a story for each phase/major deliverable in the plan:
+If the epic has no sub-issues, create stories for each major deliverable:
 ```
-save_issue(title: "<phase title>", team: "HubbleOps", parentId: "<parent-issue-id>", state: "Queuing")
+save_issue(title: "<story title>", team: "HubbleOps", parentId: "<epic-id>", labels: ["Story", "<classification>"], state: "Queuing")
 ```
-Then move the first story to **Working**.
-
-#### For the first story (either case):
-Read the relevant code and compose a checklist of concrete implementation steps. Write the checklist into the **story's description body** (append below existing content if `/approve` already populated a description):
-
-```markdown
-
-## Implementation Checklist
-- [ ] Step 1 description
-- [ ] Step 2 description
-- [ ] Step 3 description
-
----
-🤖 Claude · Session {8-char-UUID}
-```
-
-Use a **haiku subagent** for creating stories and writing descriptions.
-
-Don't create checklists for future stories yet — create them when you pick each one up. This keeps them grounded in code you've actually read.
+Populate each story with a self-contained description and checklist. Then move the first story to **Working**.
 
 ### Create the TodoWrite list:
 Build a TodoWrite list from the checklist you just created. This is your session-scoped execution tracker. Include:
